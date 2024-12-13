@@ -1,9 +1,8 @@
 ﻿@page "/AgregarPanel"
-@using BusinessLogic
 @using BusinessLogic.Interfaces
 @using Domain
-@inject IEquipoLogic equipoLogic
-@inject SesionLogic sesionLogic
+@inject IEquipoLogic EquipoLogic
+@inject SesionLogic SesionLogic
 @inject NavigationManager Navigation
 
 
@@ -11,9 +10,9 @@
 
 <div class="mb-3 d-flex align-items-center">
     <label for="equipoSelect" class="me-2">Seleccionar Equipo:</label>
-    <select id="equipoSelect" class="form-control me-2" @bind="nombreEquipoSeleccionado">
+    <select id="equipoSelect" class="form-control me-2" @bind="_nombreEquipoSeleccionado">
         <option value="">Seleccione un equipo</option>
-        @foreach (var equipo in equipos)
+        @foreach (var equipo in _equipos)
         {
         <option value="@equipo.Nombre">@equipo.Nombre</option>
         }
@@ -21,64 +20,60 @@
     <button class="btn btn-primary" @onclick="CargarEquipo">Cargar Equipo</button>
 </div>
 
-@if (equipoSeleccionado != null)
+@if (_equipoSeleccionado != null)
 {
     <div class="mb-3">
         <label>Nombre del equipo: </label>
-        <p>@equipoSeleccionado.Nombre</p>
+        <p>@_equipoSeleccionado.Nombre</p>
     </div>
     
     <form @onsubmit="CrearPanel">
         <div class="mb-3">
             <label for="nombre">Nombre:</label>
-            <input id="nombre" type="text" class="form-control" maxlength="50" @bind="panel.Nombre" required />
+            <input id="nombre" type="text" class="form-control" maxlength="50" @bind="_panel.Nombre" required />
         </div>
 
         <div class="mb-3">
             <label for="descripcion">Descripcion:</label>
-            <input id="descripcion" type="text" class="form-control" maxlength="50" @bind="panel.Descripcion" required />
+            <input id="descripcion" type="text" class="form-control" maxlength="50" @bind="_panel.Descripcion" required />
         </div>
         <button type="submit" class="btn btn-primary">Agregar</button>
     </form>
 
-    @if (!string.IsNullOrEmpty(validationError))
+    @if (!string.IsNullOrEmpty(_validationError))
     {
         <div class="alert alert-danger">
-            <p>@validationError</p>
+            <p>@_validationError</p>
         </div>
     }
     
-    @if (!string.IsNullOrEmpty(successMessage))
+    @if (!string.IsNullOrEmpty(_successMessage))
     {
         <div class="alert alert-success">
-            <p>@successMessage</p>
+            <p>@_successMessage</p>
         </div>
     }
 }
 
 @code {
-    private List<Equipo> equipos = new List<Equipo>();
-    private string? nombreEquipoSeleccionado;
-    private Equipo? equipoSeleccionado;
-    private Panel panel = new Panel();
-    private string? validationError;
-    private string? successMessage;
-    private bool firstRender = true;
+    private List<Equipo> _equipos = new List<Equipo>();
+    private string? _nombreEquipoSeleccionado;
+    private Equipo? _equipoSeleccionado;
+    private Panel _panel = new Panel();
+    private string? _validationError;
+    private string? _successMessage;
 
 
     protected override void OnInitialized()
     {
-        if(sesionLogic.UsuarioLogueado != null)
-        {
-            equipos = equipoLogic.ListarEquipos(sesionLogic.UsuarioLogueado);
-        }
+        _equipos = EquipoLogic.ListarEquipos(SesionLogic.UsuarioLogueado);
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        if (firstRender && SesionLogic.UsuarioLogueado == null)
         {
-            if (sesionLogic.UsuarioLogueado == null)
+            if (SesionLogic.UsuarioLogueado == null)
             {
                 Navigation.NavigateTo("https://localhost:7014/", true);
             }
@@ -88,26 +83,30 @@
     
     private void CargarEquipo()
     {
-        if (!string.IsNullOrEmpty(nombreEquipoSeleccionado))
+        if (!string.IsNullOrEmpty(_nombreEquipoSeleccionado))
         {
-            equipoSeleccionado = equipos.FirstOrDefault(e => e.Nombre == nombreEquipoSeleccionado);
+            _equipoSeleccionado = _equipos.FirstOrDefault(e => e.Nombre == _nombreEquipoSeleccionado);
         }
     }
     private void CrearPanel()
     {
-        panel.EquipoAlQuePertenece = equipoSeleccionado.Nombre;
-        validationError = equipoLogic.ValidarYGuardarPanel(panel, equipoSeleccionado, sesionLogic.UsuarioLogueado);
-        if(validationError == null)
+        if (_equipoSeleccionado != null)
+        {
+            _panel.EquipoAlQuePertenece = _equipoSeleccionado.Nombre;
+            _validationError = EquipoLogic.ValidarYGuardarPanel(_panel, _equipoSeleccionado, SesionLogic.UsuarioLogueado);
+        }
+
+        if(_validationError == null)
         {
             LimpiarFormulario();
         }
     }
     private void LimpiarFormulario()
     {
-        if (string.IsNullOrEmpty(validationError))
+        if (string.IsNullOrEmpty(_validationError))
         {
-            panel = new Panel();
-            successMessage = "Panel agregado con éxito";
+            _panel = new Panel();
+            _successMessage = "Panel agregado con éxito";
             
         }
     }

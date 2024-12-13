@@ -146,7 +146,7 @@ namespace Domain.Test
         public void PruebaCrearEquipoYCrearPanel()
         {
             Equipo equipo = new Equipo("Equipo 1", 10, "descrip", _usuario);
-            Panel panel = new Panel("panel1", "des", equipo.Nombre);
+            Panel? panel = new Panel("panel1", "des", equipo.Nombre);
             equipo.AgregarPanel(panel);
             Assert.AreEqual(panel, equipo.Paneles[0]);
         }
@@ -216,7 +216,7 @@ namespace Domain.Test
         public void PruebaSetYGetPaneles()
         {
             Equipo equipo = new Equipo(_usuario);
-            Panel panel = new Panel("Panel 1", "Descripcion", equipo.Nombre);
+            Panel? panel = new Panel("Panel 1", "Descripcion", equipo.Nombre);
             equipo.AgregarPanel(panel);
             Assert.AreEqual(1, equipo.Paneles.Count);
             Assert.AreEqual(panel, equipo.Paneles[0]);
@@ -226,7 +226,7 @@ namespace Domain.Test
         public void PruebaEliminarPanelPorNombre()
         {
             Equipo equipo = new Equipo(_usuario);
-            Panel panel = new Panel("Panel 1", "Descripcion", equipo.Nombre);
+            Panel? panel = new Panel("Panel 1", "Descripcion", equipo.Nombre);
             equipo.AgregarPanel(panel);
             equipo.EliminarPanel("Panel 1");
             Assert.AreEqual(0, equipo.Paneles.Count);

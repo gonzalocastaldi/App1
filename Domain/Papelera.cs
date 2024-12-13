@@ -7,7 +7,7 @@ public class Papelera
     public Usuario Usuario { get; set; }
     private const int MaxCantidad = 10;
     private List <Tarea> _tareas = new List <Tarea>();
-    private List <Panel> _paneles = new List <Panel>();
+    private List<Panel?> _paneles = new List<Panel?>();
     public int CantidadObjetosEnPapelera { get; set; } = 0;
     
 
@@ -16,12 +16,12 @@ public class Papelera
         get => MaxCantidad;
     }
     
-    public List<Panel> Paneles
+    public List<Panel?> Paneles
     {
         get => _paneles;
     }
 
-    public void AgregarPanelAPapelera(Panel panel)
+    public void AgregarPanelAPapelera(Panel? panel)
     {
         if (CantidadObjetosEnPapelera < MaxCantidad)
         {
@@ -30,7 +30,7 @@ public class Papelera
         }
     } 
 
-    public void EliminarPanelDePapelera(Panel panel)
+    public void EliminarPanelDePapelera(Panel? panel)
     {
         if (_paneles.Contains(panel))
         {

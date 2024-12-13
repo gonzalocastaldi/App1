@@ -25,7 +25,7 @@
         [TestMethod]
         public void CreacionPanelConEquipo()
         {
-            Panel panel1 = new Panel("panel1", "descripcion1", _equipo.Nombre);
+            Panel? panel1 = new Panel("panel1", "descripcion1", _equipo.Nombre);
             _equipo.AgregarPanel(panel1);
             Assert.AreEqual(1, _equipo.Paneles.Count);
         }
@@ -33,7 +33,7 @@
         [TestMethod]
         public void CreacionDePanelConTareas()
         {
-            Panel panel = new Panel("panel1", "des", _equipo.Nombre);
+            Panel? panel = new Panel("panel1", "des", _equipo.Nombre);
             Panel panel1 = new Panel("panel1", "descripcion1", _equipo.Nombre);
             Tarea tarea1 = new Tarea("tarea1", new DateTime(2024, 12, 3), "descripcion1", 2, panel, panel);
             panel1.Tareas.Add(tarea1);
@@ -43,7 +43,7 @@
         [TestMethod]
         public void AgregarTareaAPanel()
         {
-            Panel panel = new Panel("panel1", "des", _equipo.Nombre);
+            Panel? panel = new Panel("panel1", "des", _equipo.Nombre);
             Panel panel1 = new Panel("panel1", "descripcion1", _equipo.Nombre);
             Tarea tarea1 = new Tarea("tarea1", new DateTime(2024, 12, 3), "descripcion1", 2, panel, panel);
             panel1.AgregarTarea(tarea1);
@@ -116,7 +116,7 @@
         [TestMethod]
         public void EliminarTareaDePanel()
         {
-            Panel panel = new Panel("panel1", "des", _equipo.Nombre);
+            Panel? panel = new Panel("panel1", "des", _equipo.Nombre);
             Tarea tarea = new Tarea("tarea1", new DateTime(2024, 12, 3), "descripcion1", 2, panel, panel);
             panel.AgregarTarea(tarea);
             panel.EliminarTarea(tarea);

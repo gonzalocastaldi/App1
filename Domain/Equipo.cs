@@ -9,7 +9,7 @@ public class Equipo
     private int _cantidadMaxima;
     private int _cantidadActualUsuarios = 1;
     private List<Usuario> _usuarios = new();
-    private List<Panel> _paneles = new();
+    private List<Panel?> _paneles = new();
 
     public string Nombre
     {
@@ -56,7 +56,7 @@ public class Equipo
         get => _cantidadActualUsuarios;
     }
 
-    public List<Panel> Paneles
+    public List<Panel?> Paneles
     {
         get => _paneles;
     }
@@ -86,7 +86,7 @@ public class Equipo
         _cantidadActualUsuarios = _usuarios.Count;
     }
     
-    public void AgregarPanel(Panel panel)
+    public void AgregarPanel(Panel? panel)
     {
         _paneles.Add(panel);
     }

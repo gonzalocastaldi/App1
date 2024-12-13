@@ -18,7 +18,7 @@ namespace BusinessLogic
             _panelLogic = panelLogic;
         }
         
-        public void AgregarPanelAPapelera(Panel panel, Papelera papelera)
+        public void AgregarPanelAPapelera(Panel? panel, Papelera papelera)
         {
             papelera.AgregarPanelAPapelera(panel);
         }
@@ -33,7 +33,7 @@ namespace BusinessLogic
             return papelera.CantidadMaximaObjetos;
         }
         
-        public List<Panel> ListaPaneles(Papelera papelera)
+        public List<Panel?> ListaPaneles(Papelera papelera)
         {
             return papelera.Paneles;
         }

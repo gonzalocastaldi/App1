@@ -13,8 +13,8 @@ public class Tarea
     private DateTime _fechaExpiracion;
     private string _descripcion;
     private Prioridad _prioridad;
-    private Panel _panelActual;
-    private Panel _panelOriginal;
+    private Panel? _panelActual;
+    private Panel? _panelOriginal;
     private List <Comentario> _comentarios = new List<Comentario>();
     private int _esfuerzoEstimado;
     private int _esfuerzoInvertido = 0;
@@ -74,13 +74,13 @@ public class Tarea
         }
     }
     
-    public Panel PanelActual
+    public Panel? PanelActual
     {
         get => _panelActual;
         set => _panelActual = value;
     }
     
-    public Panel PanelOriginal
+    public Panel? PanelOriginal
     {
         get => _panelOriginal;
         set => _panelOriginal = value;
@@ -115,7 +115,7 @@ public class Tarea
         _comentarios.Add(comentario);
     }
 
-    public Tarea(string titulo, DateTime fechaExpiracion, string descripcion, int prioridad, Panel panelActual, Panel panelOriginal) //sacar
+    public Tarea(string titulo, DateTime fechaExpiracion, string descripcion, int prioridad, Panel? panelActual, Panel? panelOriginal) //sacar
     {
         Titulo = titulo;
         FechaExpiracion = fechaExpiracion;
@@ -126,8 +126,8 @@ public class Tarea
         _comentarios = new List<Comentario>();
     }
     
-    public Tarea(string titulo, DateTime fechaExpiracion, string descripcion, int prioridad, Panel panelActual,
-        Panel panelOriginal, int esfuerzoEstimado)
+    public Tarea(string titulo, DateTime fechaExpiracion, string descripcion, int prioridad, Panel? panelActual,
+        Panel? panelOriginal, int esfuerzoEstimado)
     {
         Titulo = titulo;
         FechaExpiracion = fechaExpiracion;

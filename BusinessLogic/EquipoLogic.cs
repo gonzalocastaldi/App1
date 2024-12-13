@@ -111,7 +111,7 @@ namespace BusinessLogic
 
         public void AgregarPanelTareasVencidas(Equipo equipo)
         {
-            Panel tareasVencidas = new Panel("Tareas Vencidas", "Panel para tareas vencidas", equipo.Nombre);
+            Panel? tareasVencidas = new Panel("Tareas Vencidas", "Panel para tareas vencidas", equipo.Nombre);
             equipo.AgregarPanel(tareasVencidas);
             _equipos.Actualizar(equipo);
         }
@@ -136,7 +136,7 @@ namespace BusinessLogic
             _context.SaveChanges();
         }
 
-        public void AgregarPanel(string nombreEquipo, Panel panel, Usuario usuario)
+        public void AgregarPanel(string nombreEquipo, Panel? panel, Usuario usuario)
         {
             Equipo? equipo = _equipos.Buscar(nombreEquipo);
             bool existeEquipo = equipo != null;
@@ -162,7 +162,7 @@ namespace BusinessLogic
             bool existeEquipo = equipo != null;
             ManejoExcepciones.ChequearCondiciones(existeEquipo, "El equipo no existe");
             
-            Panel panel = equipo.Paneles.FirstOrDefault(p => p.Nombre == nombrePanel);
+            Panel? panel = equipo.Paneles.FirstOrDefault(p => p.Nombre == nombrePanel);
             bool panelExistente = panel != null;
             ManejoExcepciones.ChequearCondiciones(panelExistente, "El panel no existe.");
 
@@ -286,7 +286,7 @@ namespace BusinessLogic
             }
         }
         
-        public string? ValidarYGuardarPanel(Panel panel, Equipo equipo, Usuario usuario)
+        public string? ValidarYGuardarPanel(Panel? panel, Equipo equipo, Usuario usuario)
         {
             try
             {

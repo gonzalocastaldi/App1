@@ -26,7 +26,7 @@ public class RepositorioUsuario
             .FirstOrDefault(p => p.UsuarioId == usuarioId);
     }
     
-    public void AgregarPanelAPapelera(Panel panel, Usuario usuario)
+    public void AgregarPanelAPapelera(Panel? panel, Usuario usuario)
     {
         var papelera = ObtenerPapeleraPorUsuarioId(usuario.Id);
         if (panel == null)

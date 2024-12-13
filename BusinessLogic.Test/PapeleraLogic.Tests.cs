@@ -14,7 +14,7 @@ public class PapeleraLogic_Tests
     private PanelLogic panelLogic;
     private PapeleraLogic papeleraLogic;
     private Usuario usuario;
-    private Panel panel;
+    private Panel? panel;
     private Tarea tarea;
     private Papelera papelera;
 
@@ -144,7 +144,7 @@ public class PapeleraLogic_Tests
     {
         Equipo equipo = new Equipo("Equipo1", 10, "Descripcion", usuario);
         _repositorioEquipo.Agregar(equipo);
-        Panel panelEquipo = new Panel("Panel1", "Descripcion", equipo.Nombre);
+        Panel? panelEquipo = new Panel("Panel1", "Descripcion", equipo.Nombre);
         equipo.AgregarPanel(panelEquipo);
         Tarea tareaDuplicada = new Tarea { PanelOriginal = panelEquipo };
         panelEquipo.Tareas.Add(tareaDuplicada);

@@ -70,7 +70,7 @@ public class TareaTests
     [TestMethod]
     public void PruebaAsignarPrioridad()
     {
-        Panel panel = new Panel("panel1", "des", equipo.Nombre);
+        Panel? panel = new Panel("panel1", "des", equipo.Nombre);
         Tarea tarea1 = new Tarea("titulo1", new DateTime(2024, 12, 23), "desc", 2, panel, panel);
         Assert.AreEqual(Prioridad.Urgente, tarea1.Prioridad);
     }
@@ -86,7 +86,7 @@ public class TareaTests
     [TestMethod]
     public void CrearTareaConConstructor()
     {
-        Panel panel = new Panel("panel1", "des", equipo.Nombre);
+        Panel? panel = new Panel("panel1", "des", equipo.Nombre);
         Tarea tarea1 = new Tarea("titulo1", new DateTime(2024, 12, 23), "desc", 2, panel, panel);
         Assert.AreEqual("titulo1", tarea1.Titulo);
     }
@@ -94,7 +94,7 @@ public class TareaTests
     [TestMethod]
     public void CrearTareaConComentario()
     {
-        Panel panel = new Panel("panel1", "des", equipo.Nombre);
+        Panel? panel = new Panel("panel1", "des", equipo.Nombre);
         Tarea tarea1 = new Tarea("titulo1", new DateTime(2024, 12, 23), "desc", 2, panel, panel);
         Usuario usuario1 = new Usuario(false, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
         Usuario usuario2 = new Usuario(false, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
@@ -106,7 +106,7 @@ public class TareaTests
     [TestMethod]
     public void AgregarTareaAPanel()
     {
-        Panel panel2 = new Panel("panel1", "des", equipo.Nombre);
+        Panel? panel2 = new Panel("panel1", "des", equipo.Nombre);
         Tarea tarea1 = new Tarea("titulo1", new DateTime(2024, 12, 23), "desc", 2, panel2, panel2);
         Panel panel = new Panel("panel1", "des", equipo.Nombre);
         panel.AgregarTarea(tarea1);
@@ -124,7 +124,7 @@ public class TareaTests
     [TestMethod]
     public void PruebaSetYGetPanelActual()
     {
-        Panel panel = new Panel("panel1", "des", equipo.Nombre);
+        Panel? panel = new Panel("panel1", "des", equipo.Nombre);
         Tarea tarea = new Tarea();
         tarea.PanelActual = panel;
         Assert.AreEqual(panel, tarea.PanelActual);

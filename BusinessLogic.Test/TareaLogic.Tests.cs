@@ -28,7 +28,7 @@ public class TareaLogic_Tests
         Usuario usuarioCreador = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
         EquipoLogic _equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
         _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", usuarioCreador);
-        Panel panel = new Panel("nombre", "desc", "equipo1");
+        Panel? panel = new Panel("nombre", "desc", "equipo1");
         _equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
         Tarea tarea = new Tarea("titulo",  new DateTime(2025, 5, 3),"asdasd",2, panel, panel);
         PanelLogic _panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -44,7 +44,7 @@ public class TareaLogic_Tests
         Usuario usuarioCreador = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
         EquipoLogic _equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
         _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", usuarioCreador);
-        Panel panel = new Panel("nombre", "desc", "equipo1");
+        Panel? panel = new Panel("nombre", "desc", "equipo1");
         _equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
         Tarea tarea = new Tarea("titulo",  new DateTime(2025, 5, 3),"asdasd",2, panel, panel);
         PanelLogic _panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -61,7 +61,7 @@ public class TareaLogic_Tests
            Usuario usuarioCreador = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
            EquipoLogic _equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
            _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", usuarioCreador);
-           Panel panel = new Panel("nombre", "desc", "equipo1");
+           Panel? panel = new Panel("nombre", "desc", "equipo1");
            _equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
            Tarea tarea = new Tarea("titulo",  new DateTime(2025, 5, 3),"asdasd",2, panel, panel);
            PanelLogic _panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -77,7 +77,7 @@ public class TareaLogic_Tests
            Usuario usuarioCreador = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
            EquipoLogic _equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
            _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", usuarioCreador);
-           Panel panel = new Panel("nombre", "desc", "equipo1");
+           Panel? panel = new Panel("nombre", "desc", "equipo1");
            _equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
            Tarea tarea = new Tarea("titulo",  new DateTime(2025, 5, 3),"asdasd",2, panel, panel);
            PanelLogic _panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -92,7 +92,7 @@ public class TareaLogic_Tests
            Usuario usuarioCreador = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
            EquipoLogic _equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
            _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", usuarioCreador);
-           Panel panel = new Panel("nombre", "desc", "equipo1");
+           Panel? panel = new Panel("nombre", "desc", "equipo1");
            _equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
            Tarea tarea = new Tarea("titulo",  new DateTime(2025, 5, 3),"asdasd",2, panel, panel);
            Tarea tarea2 = new Tarea("titulo2",  new DateTime(2025, 5, 3),"asdasd",2, panel, panel);
@@ -109,7 +109,7 @@ public class TareaLogic_Tests
            Usuario usuarioCreador = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
            EquipoLogic _equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
            _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", usuarioCreador);
-           Panel panel = new Panel("nombre", "desc", "equipo1");
+           Panel? panel = new Panel("nombre", "desc", "equipo1");
            _equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
            Tarea tarea = new Tarea("titulo",  new DateTime(2025, 5, 3),"asdasd",2, panel, panel);
            PanelLogic _panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -126,7 +126,7 @@ public class TareaLogic_Tests
            Usuario usuarioCreador = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
            EquipoLogic _equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
            _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", usuarioCreador);
-           Panel panel = new Panel("nombre", "desc", "equipo1");
+           Panel? panel = new Panel("nombre", "desc", "equipo1");
            _equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
            Tarea tarea = new Tarea("titulo",  new DateTime(2025, 5, 3),"asdasd",2, panel, panel);
            PanelLogic _panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -142,7 +142,7 @@ public class TareaLogic_Tests
            Usuario usuarioCreador = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
            EquipoLogic _equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
            _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", usuarioCreador);
-           Panel panel = new Panel("nombre", "desc", "equipo1");
+           Panel? panel = new Panel("nombre", "desc", "equipo1");
            _equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
            Tarea tarea = new Tarea("titulo",  new DateTime(2025, 5, 3),"asdasd",2, panel, panel);
            PanelLogic _panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -157,7 +157,7 @@ public class TareaLogic_Tests
            Usuario usuarioCreador = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
            EquipoLogic _equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
            _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", usuarioCreador);
-           Panel panel = new Panel("nombre", "desc", "equipo1");
+           Panel? panel = new Panel("nombre", "desc", "equipo1");
            _equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
            Tarea tarea = new Tarea("titulo",  new DateTime(2025, 5, 3),"asdasd",2, panel, panel);
            PanelLogic _panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -173,7 +173,7 @@ public class TareaLogic_Tests
            Usuario usuarioCreador = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
            EquipoLogic _equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
            _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", usuarioCreador);
-           Panel panel = new Panel("nombre", "desc", "equipo1");
+           Panel? panel = new Panel("nombre", "desc", "equipo1");
            _equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
            Tarea tarea = new Tarea("titulo",  new DateTime(2025, 5, 3),"asdasd",2, panel, panel);
            PanelLogic _panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -194,7 +194,7 @@ public class TareaLogic_Tests
            Usuario usuarioCreador = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
            EquipoLogic _equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
            _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", usuarioCreador);
-           Panel panel = new Panel("nombre", "desc", "equipo1");
+           Panel? panel = new Panel("nombre", "desc", "equipo1");
            _equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
            Tarea tarea = new Tarea("titulo",  new DateTime(2025, 5, 3),"asdasd",2, panel, panel);
            PanelLogic _panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -214,7 +214,7 @@ public class TareaLogic_Tests
            Usuario usuarioCreador = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
            EquipoLogic _equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
            _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", usuarioCreador);
-           Panel panel = new Panel("nombre", "desc", "equipo1");
+           Panel? panel = new Panel("nombre", "desc", "equipo1");
            _equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
            Tarea tarea = new Tarea("titulo",  new DateTime(2025, 5, 3),"asdasd",2, panel, panel);
            PanelLogic _panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -233,7 +233,7 @@ public class TareaLogic_Tests
            Usuario usuarioCreador = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
            EquipoLogic _equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
            _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", usuarioCreador);
-           Panel panel = new Panel("nombre", "desc", "equipo1");
+           Panel? panel = new Panel("nombre", "desc", "equipo1");
            _equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
            Tarea tarea = new Tarea("titulo",  new DateTime(2025, 5, 3),"asdasd",2, panel, panel);
            PanelLogic _panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -253,7 +253,7 @@ public class TareaLogic_Tests
            Usuario usuarioCreador = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
            EquipoLogic _equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
            _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", usuarioCreador);
-           Panel panel = new Panel("nombre", "desc", "equipo1");
+           Panel? panel = new Panel("nombre", "desc", "equipo1");
            _equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
            Tarea tarea = new Tarea("titulo", new DateTime(2025, 5, 3), "asdasd", 2, panel, panel);
            PanelLogic _panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -270,7 +270,7 @@ public class TareaLogic_Tests
            Usuario usuarioCreador = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
            EquipoLogic _equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
            _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", usuarioCreador);
-           Panel panel = new Panel("nombre", "desc", "equipo1");
+           Panel? panel = new Panel("nombre", "desc", "equipo1");
            _equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
            Tarea tarea = new Tarea("titulo", new DateTime(2025, 5, 3), "asdasd", 2, panel, panel);
            PanelLogic _panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);

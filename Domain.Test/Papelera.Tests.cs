@@ -25,7 +25,7 @@ public class PapeleraTests
     [TestMethod]
     public void AgregarTareaAPapelera()
     {
-        Panel panel = new Panel("panel1", "Descripcion", equipo.Nombre);
+        Panel? panel = new Panel("panel1", "Descripcion", equipo.Nombre);
         Tarea tarea = new Tarea("Tarea", new DateTime(2025, 11, 11), "Descripcion", 0, panel, panel);
         papelera.AgregarTareaAPapelera(tarea);
         Assert.AreEqual(1, papelera.CantidadObjetosEnPapelera);
@@ -34,7 +34,7 @@ public class PapeleraTests
     [TestMethod]
     public void AgregarPanelAPapelera()
     {
-        Panel panel = new Panel("Panel", "Descripcion", equipo.Nombre);
+        Panel? panel = new Panel("Panel", "Descripcion", equipo.Nombre);
         papelera.AgregarPanelAPapelera(panel);
         Assert.AreEqual(1, papelera.CantidadObjetosEnPapelera);
     }
@@ -42,7 +42,7 @@ public class PapeleraTests
     [TestMethod]
     public void EliminarTareaExistente()
     {
-        Panel panel = new Panel("panel1", "Descripcion", equipo.Nombre);
+        Panel? panel = new Panel("panel1", "Descripcion", equipo.Nombre);
         Tarea tarea = new Tarea("Tarea", new DateTime(2025, 11, 11), "Descripcion", 0, panel, panel);
         papelera.AgregarTareaAPapelera(tarea);
         papelera.EliminarTareaDePapelera(tarea);
@@ -53,7 +53,7 @@ public class PapeleraTests
     [ExpectedException(typeof(ArgumentException))]
     public void EliminarTareaNoExistente()
     {
-        Panel panel = new Panel("panel1", "Descripcion", equipo.Nombre);
+        Panel? panel = new Panel("panel1", "Descripcion", equipo.Nombre);
         Tarea tarea = new Tarea("Tarea", new DateTime(2025, 11, 11), "Descripcion", 0, panel, panel);
         papelera.EliminarTareaDePapelera(tarea);
     }
@@ -61,7 +61,7 @@ public class PapeleraTests
     [TestMethod]
     public void EliminarPanelExistente()
     {
-        Panel panel = new Panel("Panel", "Descripcion", equipo.Nombre);
+        Panel? panel = new Panel("Panel", "Descripcion", equipo.Nombre);
         papelera.AgregarPanelAPapelera(panel);
         papelera.EliminarPanelDePapelera(panel);
         Assert.AreEqual(0, papelera.CantidadObjetosEnPapelera);
@@ -71,14 +71,14 @@ public class PapeleraTests
     [ExpectedException(typeof(ArgumentException))]
     public void EliminarPanelNoExistente()
     {
-        Panel panel = new Panel("Panel", "Descripcion", equipo.Nombre);
+        Panel? panel = new Panel("Panel", "Descripcion", equipo.Nombre);
         papelera.EliminarPanelDePapelera(panel);
     }
 
     [TestMethod]
     public void AgregarTareaConPapeleraLlena()
     {
-        Panel panel = new Panel("panel1", "Descripcion", equipo.Nombre);
+        Panel? panel = new Panel("panel1", "Descripcion", equipo.Nombre);
         Tarea tarea1 = new Tarea("Tarea1", new DateTime(2025, 11, 11), "Descripcion1", 0, panel, panel);
         Tarea tarea2 = new Tarea("Tarea2", new DateTime(2025, 11, 11), "Descripcion2", 0, panel, panel);
         Tarea tarea3 = new Tarea("Tarea3", new DateTime(2025, 11, 11), "Descripcion3", 0, panel, panel);
@@ -107,17 +107,17 @@ public class PapeleraTests
     [TestMethod]
     public void AgregarPanelConPapeleraLlena()
     {
-        Panel panel1 = new Panel("Panel1", "Descripcion1", equipo.Nombre);
-        Panel panel2 = new Panel("Panel2", "Descripcion2", equipo.Nombre);
-        Panel panel3 = new Panel("Panel3", "Descripcion3", equipo.Nombre);
-        Panel panel4 = new Panel("Panel4", "Descripcion4", equipo.Nombre);
-        Panel panel5 = new Panel("Panel5", "Descripcion5", equipo.Nombre);
-        Panel panel6 = new Panel("Panel6", "Descripcion6", equipo.Nombre);
-        Panel panel7 = new Panel("Panel7", "Descripcion7", equipo.Nombre);
-        Panel panel8 = new Panel("Panel8", "Descripcion8", equipo.Nombre);
-        Panel panel9 = new Panel("Panel9", "Descripcion9", equipo.Nombre);
-        Panel panel10 = new Panel("Panel10", "Descripcion10", equipo.Nombre);
-        Panel panel11 = new Panel("Panel11", "Descripcion11", equipo.Nombre);
+        Panel? panel1 = new Panel("Panel1", "Descripcion1", equipo.Nombre);
+        Panel? panel2 = new Panel("Panel2", "Descripcion2", equipo.Nombre);
+        Panel? panel3 = new Panel("Panel3", "Descripcion3", equipo.Nombre);
+        Panel? panel4 = new Panel("Panel4", "Descripcion4", equipo.Nombre);
+        Panel? panel5 = new Panel("Panel5", "Descripcion5", equipo.Nombre);
+        Panel? panel6 = new Panel("Panel6", "Descripcion6", equipo.Nombre);
+        Panel? panel7 = new Panel("Panel7", "Descripcion7", equipo.Nombre);
+        Panel? panel8 = new Panel("Panel8", "Descripcion8", equipo.Nombre);
+        Panel? panel9 = new Panel("Panel9", "Descripcion9", equipo.Nombre);
+        Panel? panel10 = new Panel("Panel10", "Descripcion10", equipo.Nombre);
+        Panel? panel11 = new Panel("Panel11", "Descripcion11", equipo.Nombre);
         papelera.AgregarPanelAPapelera(panel1);
         papelera.AgregarPanelAPapelera(panel2);
         papelera.AgregarPanelAPapelera(panel3);
@@ -135,9 +135,9 @@ public class PapeleraTests
     [TestMethod]
     public void AgregarPanelYTareaAPapelera()
     {
-        Panel panel2 = new Panel("panel1", "Descripcion", equipo.Nombre);
+        Panel? panel2 = new Panel("panel1", "Descripcion", equipo.Nombre);
         Tarea tarea = new Tarea("Tarea", new DateTime(2025, 11, 11), "Descripcion", 0, panel2, panel2);
-        Panel panel= new Panel("Panel", "Descripcion", equipo.Nombre);
+        Panel? panel= new Panel("Panel", "Descripcion", equipo.Nombre);
         papelera.AgregarTareaAPapelera(tarea);
         papelera.AgregarPanelAPapelera(panel);
         Assert.AreEqual(2, papelera.CantidadObjetosEnPapelera);
@@ -146,7 +146,7 @@ public class PapeleraTests
     [TestMethod]
     public void VaciarPapelera()
     {
-        Panel panel = new Panel("Panel", "Descripcion", equipo.Nombre);
+        Panel? panel = new Panel("Panel", "Descripcion", equipo.Nombre);
         papelera.AgregarPanelAPapelera(panel);
         papelera.VaciarPapelera();
         Assert.AreEqual(0, papelera.CantidadObjetosEnPapelera);

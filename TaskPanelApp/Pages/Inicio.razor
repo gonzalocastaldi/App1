@@ -1,0 +1,42 @@
+﻿@page "/inicio"
+@using BusinessLogic
+@inject SesionLogic sesionLogic
+@inject NavigationManager NavigationManager
+
+<PageTitle>Inicio</PageTitle>
+
+@if(sesionLogic.UsuarioLogueado != null)
+{
+<h3> Bienvenido @sesionLogic.UsuarioLogueado.Nombre a TaskPanelApp! </h3>
+
+
+
+<p> Encontrarás las opciones de navegación en la barra lateral izquierda.</p>
+}
+else
+{
+    <h1>ES NULL!!!!</h1>
+}
+
+
+@code {
+    //private bool firstRender = true;
+    
+    protected override void OnInitialized()
+    {
+        
+    }
+/*
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        {
+            if (sesionLogic.UsuarioLogueado == null)
+            {
+                NavigationManager.NavigateTo("https://localhost:7014/", true);
+            }
+            firstRender = false;
+        }
+    }
+    */
+}

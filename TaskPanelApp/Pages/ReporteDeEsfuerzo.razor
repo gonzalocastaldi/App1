@@ -1,0 +1,155 @@
+﻿@page "/ReporteDeEsfuerzo"
+@inject IEquipoLogic equipoLogic
+@inject SesionLogic sesionLogic
+@inject IEpicaLogic epicaLogic;
+@inject IPanelLogic panelLogic;
+@inject NavigationManager Navigation
+@using BusinessLogic.Interfaces
+@using Domain
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+
+<h3>Reporte de esfuerzo</h3>
+
+<div class="mb-3 d-flex align-items-center">
+    <label for="equipoSelect" class="me-2">Seleccionar Equipo:</label>
+    <select id="equipoSelect" class="form-control me-2" @bind="nombreEquipoSeleccionado">
+        <option value="">Seleccione un equipo</option>
+        @foreach (var equipo in equipos)
+        {
+        <option value="@equipo.Nombre">@equipo.Nombre</option>
+        }
+    </select>
+    <button class="btn btn-primary" @onclick="CargarEquipo">Cargar Equipo</button>
+</div>
+
+@if (equipoSeleccionado != null)
+{
+<div class="mb-3 d-flex align-items-center">
+    <label for="panelSelect" class="me-2">Seleccionar Panel:</label>
+    <select id="panelSelect" class="form-control me-2" @bind="nombrePanelSeleccionado">
+        <option value="">Seleccione un panel</option>
+        @foreach (var panel in paneles)
+        {
+        <option value="@panel.Nombre">@panel.Nombre</option>
+        }
+    </select>
+    <button class="btn btn-primary" @onclick="CargarPanel">Cargar Panel</button>
+</div>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+<div class="alert alert-danger">
+    <p>@errorMessage</p>
+</div>
+}
+@if (!string.IsNullOrEmpty(successMessage))
+{
+<div class="alert alert-success">
+    <p>@successMessage</p>
+</div>
+}
+@if (panelSeleccionado != null)
+{
+<div class="mb-3 d-flex align-items-center">
+    <label for="epicaSelect" class="me-2">Seleccionar Epica:</label>
+    <select id="epicaSelect" class="form-control me-2" @bind="tituloEpicaSeleccionada">
+        <option value="">Seleccione una epica</option>
+        @foreach (var epica in epicas)
+        {
+        <option value="@epica.Titulo">@epica.Titulo</option>
+        }
+    </select>
+    <button class="btn btn-primary" @onclick="CargarEpica">Cargar Epica</button>
+</div>
+}
+@if (epicaSeleccionada != null)
+{
+<p>Titulo: @epicaSeleccionada.Titulo</p>
+<p>Descripcion: @epicaSeleccionada.Descripcion</p>
+<p>Esfuerzo Total invertido: @epicaSeleccionada.EsfuerzoInvertido</p>
+<p>Esfuerzo Total estimado: @epicaSeleccionada.EsfuerzoEstimado</p>
+@if(epicaSeleccionada.EsfuerzoEstimado - epicaSeleccionada.EsfuerzoInvertido < 0)
+{
+    <p>Esfuerzo faltante para llegar al esfuerzo estimado 0</p>
+}
+else
+{
+    <p>Esfuerzo faltante para llegar al esfuerzo estimado @(epicaSeleccionada.EsfuerzoEstimado - epicaSeleccionada.EsfuerzoInvertido)</p>
+}
+<hr />
+<h4>Tareas</h4>
+foreach (var tarea in epicaSeleccionada.Tareas)
+{
+    <p>Titulo: @tarea.Titulo</p>
+    <p>Descripcion: @tarea.Descripcion</p>
+    <p>Esfuerzo invertido: @tarea.EsfuerzoInvertido</p>
+    <p>Esfuerzo estimado: @tarea.EsfuerzoEstimado</p>
+    @if (tarea.EsfuerzoEstimado - tarea.EsfuerzoInvertido < 0)
+    {
+        <p>Esfuerzo faltante para llegar al esfuerzo estimado 0</p>
+    }
+    else
+    {
+        <p>Esfuerzo faltante para llegar al esfuerzo estimado @(tarea.EsfuerzoEstimado- tarea.EsfuerzoInvertido)</p>    
+    }
+    <hr />
+}
+}
+@code {
+    private List<Equipo> equipos = new List<Equipo>();
+    private string? nombreEquipoSeleccionado, nombrePanelSeleccionado, tituloEpicaSeleccionada, errorMessage, successMessage;
+    private Equipo? equipoSeleccionado;
+    private List<Panel> paneles = new List<Panel>();
+    private Panel? panelSeleccionado;
+    private List<Epica> epicas = new List<Epica>();
+    private Epica? epicaSeleccionada;
+    private bool firstRender = true;
+    
+    protected override void OnInitialized()
+    {
+        if (sesionLogic.UsuarioLogueado != null)
+        {
+            equipos = equipoLogic.ListarEquipos(sesionLogic.UsuarioLogueado);
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        {
+            if (sesionLogic.UsuarioLogueado == null)
+            {
+                Navigation.NavigateTo("https://localhost:7014/", true);
+            }
+
+            firstRender = false;
+        }
+    }
+
+    private void CargarEquipo()
+    {
+        if (!string.IsNullOrEmpty(nombreEquipoSeleccionado))
+        {
+            equipoSeleccionado = equipos.FirstOrDefault(e => e.Nombre == nombreEquipoSeleccionado);
+            paneles = equipoSeleccionado.Paneles;
+        }
+    }
+
+    private void CargarPanel()
+    {
+        if (!string.IsNullOrEmpty(nombrePanelSeleccionado))
+        {
+            panelSeleccionado = paneles.FirstOrDefault(p => p.Nombre == nombrePanelSeleccionado);
+            epicas = panelSeleccionado.Epicas;
+        }
+    }
+
+    private void CargarEpica()
+    {
+        if (!string.IsNullOrEmpty(tituloEpicaSeleccionada))
+        {
+            epicaSeleccionada = epicas.FirstOrDefault(e => e.Titulo == tituloEpicaSeleccionada);
+        }
+    }
+}

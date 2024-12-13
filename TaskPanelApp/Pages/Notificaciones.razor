@@ -1,0 +1,63 @@
+﻿@page "/Notificaciones"
+@using BusinessLogic
+@using BusinessLogic.Interfaces
+@using Domain
+@inject SesionLogic sesionLogic
+@inject IUsuarioLogic usuarioLogic
+@inject NavigationManager Navigation
+
+
+<h3>Notificaciones</h3>
+
+<ul>
+    @if (_notificaciones == null)
+    {
+        <li>No hay notificaciones</li>
+    }
+    else
+    {
+        @foreach (Notificacion notificacion in _notificaciones)
+        {
+            <li>@notificacion?.Comentario?.UsuarioResolvedor?.Apellido Ha resuelto un comentario!</li>
+            <li>Titulo del comentario: @notificacion?.Comentario?.Titulo</li>
+            <li>Fecha de resolución: @notificacion?.Comentario?.FechaResolucion</li>
+            <button class="btn btn-danger" @onclick="() => EliminarNotificacionSeleccionada(notificacion)">Eliminar notificación</button>
+            <hr/>
+        }
+    }
+</ul>
+@code {
+    private Usuario _UsuarioLogueado;
+    private List<Notificacion>? _notificaciones;
+    private bool firstRender = true;
+
+
+    protected override void OnInitialized()
+    {
+        usuarioLogic.actualizar(sesionLogic.UsuarioLogueado);
+        if(sesionLogic.UsuarioLogueado != null)
+        {
+            _UsuarioLogueado = sesionLogic.UsuarioLogueado;
+            _notificaciones = usuarioLogic.ListarNotificaciones(_UsuarioLogueado);
+            //_notificaciones = _UsuarioLogueado.Notificaciones;
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        {
+            if (sesionLogic.UsuarioLogueado == null)
+            {
+                Navigation.NavigateTo("https://localhost:7014/", true);
+            }
+            firstRender = false;
+        }
+    }
+    
+    private void EliminarNotificacionSeleccionada(Notificacion notificacion)
+    {
+        usuarioLogic.EliminarNotificacion(notificacion);
+        _notificaciones = usuarioLogic.ListarNotificaciones(_UsuarioLogueado);
+    }
+}

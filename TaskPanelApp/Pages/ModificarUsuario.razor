@@ -1,0 +1,241 @@
+﻿@page "/ModificarUsuario"
+@using BusinessLogic
+@using BusinessLogic.Interfaces
+@using Domain
+@inject IUsuarioLogic usuarioLogic
+@inject SesionLogic sesionLogic
+@inject NavigationManager Navigation
+
+
+<h3>Modificar usuario</h3>
+
+<div class="mb-3">
+    <label for="equipoSelect">Seleccionar Usuario:</label>
+    <select id="equipoSelect" class="form-control" @bind="emailSeleccionado">
+        <option value="">Seleccione un usuario</option>
+        @foreach (var usuario in usuarios)
+        {
+            <option value="@usuario.Email">@usuario.Email</option>
+        }
+    </select>
+</div>
+
+<button class="btn btn-primary" @onclick="CargarUsuario">Cargar Usuario</button>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+<div class="alert alert-danger">
+    <p>@errorMessage</p>
+</div>
+}
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+<div class="alert alert-success">
+    <p>@successMessage</p>
+</div>
+}
+
+@if (usuarioSeleccionado != null)
+{
+    <div class="mb-3">
+        <label for="email">Email:</label>
+        @if (editandoEmail)
+        {
+            <input id="email" type="text" class="form-control" maxlength="50" @bind="nuevoEmail" required />
+            <button class="btn btn-success" @onclick="GuardarEmail">Guardar</button>
+        }
+        else
+        {
+            <p>@usuarioSeleccionado.Email</p>
+            <button class="btn btn-primary" @onclick="EditarEmail">Modificar Email</button>
+        }
+    </div>
+    
+
+    <div class="mb-3">
+        <label for="nombre">Nombre:</label>
+        @if (editandoNombre)
+        {
+            <input id="nombre" type="text" class="form-control" maxlength="50" @bind="nuevoNombre" required />
+            <button class="btn btn-success" @onclick="GuardarNombre">Guardar</button>
+        }
+        else
+        {
+            <p>@usuarioSeleccionado.Nombre</p>
+            <button class="btn btn-primary" @onclick="EditarNombre">Modificar Nombre</button>
+        }
+    </div>
+
+    <div class="mb-3">
+        <label for="apellido">Apellido:</label>
+        @if (editandoApellido)
+        {
+            <input id="apellido" type="text" class="form-control" maxlength="50" @bind="nuevoApellido" required />
+            <button class="btn btn-success" @onclick="GuardarApellido">Guardar</button>
+        }
+        else
+        {
+            <p>@usuarioSeleccionado.Apellido</p>
+            <button class="btn btn-primary" @onclick="EditarApellido">Modificar Apellido</button>
+        }
+    </div>
+
+    <div class="mb-3">
+        <label for="contrasena">Contraseña:</label>
+            <p>********</p>
+            <button class="btn btn-primary" @onclick="EditarContrasena">Reiniciar Contraseña</button>
+    </div>
+    
+    @if (!string.IsNullOrEmpty(nuevaContrasena))
+    {
+        <div class="mb-3">
+            <label for="nuevaContrasena">Nueva Contraseña:</label>
+            <p>@nuevaContrasena</p>
+        </div>
+    }
+    
+    <div class="mb-3">
+        <label for="fechaNacimiento">Fecha de Nacimiento:</label>
+        <p>@usuarioSeleccionado.FechaNacimiento.ToString("dd/MM/yyyy")</p>
+    </div>
+
+    <div class="mb-3">
+        <label for="esAdmin">Es Admin:</label>
+        @if(usuarioSeleccionado.EsAdmin)
+        {
+            <p>Si</p>
+        }
+        else
+        {
+            <p>No</p>
+        }
+    </div>
+}
+
+@code {
+    private List<Usuario> usuarios = new List<Usuario>();
+    private Usuario? usuarioSeleccionado;
+    private string? emailSeleccionado, nuevoEmail, nuevoNombre, nuevoApellido, nuevaContrasena, errorMessage, successMessage;
+    private bool editandoEmail, editandoNombre, editandoApellido, editandoContrasena, editandoEsAdmin;
+    private bool firstRender = true;
+
+
+    protected override void OnInitialized()
+    {
+        if(sesionLogic.UsuarioLogueado != null){
+           if (sesionLogic.UsuarioLogueado.EsAdmin)
+           {
+               usuarios = usuarioLogic.ListarUsuarios(sesionLogic.UsuarioLogueado);
+           }
+           else
+           {
+               usuarios.Add(sesionLogic.UsuarioLogueado);
+           } 
+        }
+    
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        {
+            if (sesionLogic.UsuarioLogueado == null)
+            {
+                Navigation.NavigateTo("https://localhost:7014/", true);
+            }
+            firstRender = false;
+        }
+    }
+
+    private void CargarUsuario()
+    {
+        errorMessage = null;
+        successMessage = null;
+        if (!string.IsNullOrEmpty(emailSeleccionado))
+        {
+            usuarioSeleccionado = usuarios.FirstOrDefault(u => u.Email == emailSeleccionado);
+        }
+    }
+
+    private void EditarEmail() => editandoEmail = true;
+    private void GuardarEmail()
+    {
+        try
+        {
+            errorMessage = null;
+            successMessage = null;
+            if (usuarioSeleccionado == null)
+            {
+                errorMessage = "No se ha seleccionado un usuario.";
+                return;
+            }
+
+            if (string.IsNullOrEmpty(nuevoEmail))
+            {
+                errorMessage = "El nuevo email no puede estar vacío.";
+                return;
+            }
+
+            if (sesionLogic.UsuarioLogueado == null)
+            {
+                errorMessage = "El usuario logueado no está disponible.";
+                return;
+            }
+            
+            usuarioLogic.ModificarEmail(usuarioSeleccionado, sesionLogic.UsuarioLogueado, nuevoEmail);
+            emailSeleccionado = nuevoEmail;
+            editandoEmail = false;
+            successMessage = "Email modificado correctamente.";
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+    }
+
+    private void EditarNombre() => editandoNombre = true;
+    private void GuardarNombre()
+    {
+        errorMessage = null;
+        successMessage = null;
+        if(string.IsNullOrEmpty(nuevoNombre))
+        {
+            errorMessage = "El nuevo nombre no puede estar vacío.";
+            editandoNombre = false;
+            return;
+        }
+        usuarioLogic.ModificarNombre(sesionLogic.UsuarioLogueado, usuarioSeleccionado, nuevoNombre);
+        editandoNombre = false;
+        successMessage = "Nombre modificado correctamente.";
+    }
+
+    private void EditarApellido() => editandoApellido = true;
+    private void GuardarApellido()
+    {
+        errorMessage = null;
+        successMessage = null;
+        if(string.IsNullOrEmpty(nuevoApellido))
+        {
+            errorMessage = "El nuevo apellido no puede estar vacío.";
+            editandoApellido = false;
+            return;
+        }
+        usuarioLogic.ModificarApellido(sesionLogic.UsuarioLogueado, usuarioSeleccionado, nuevoApellido);
+        editandoApellido = false;
+        successMessage = "Apellido modificado correctamente.";
+    }
+
+    private void EditarContrasena()
+    { 
+        try
+        {
+            usuarioLogic.ReiniciarContraseña(sesionLogic.UsuarioLogueado, usuarioSeleccionado);
+            successMessage = "Contraseña modificada correctamente. La nueva contraseña es: " + usuarioSeleccionado.Contrasena;
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+    }
+}

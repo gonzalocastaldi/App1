@@ -1,0 +1,139 @@
+﻿@page "/EliminarUsuario"
+@using BusinessLogic
+@using BusinessLogic.Interfaces
+@using Domain
+@inject IUsuarioLogic usuarioLogic
+@inject SesionLogic sesionLogic
+@inject NavigationManager Navigation
+
+@if (sesionLogic.UsuarioLogueado != null && sesionLogic.UsuarioLogueado.EsAdmin)
+{
+    <h3>Eliminar usuario</h3>
+
+    <div class="mb-3">
+        <label for="equipoSelect">Seleccionar Usuario:</label>
+        <select id="equipoSelect" class="form-control" @bind="emailSeleccionado">
+            <option value="">Seleccione un usuario</option>
+            @foreach (var usuario in usuarios)
+            {
+                <option value="@usuario.Email">@usuario.Email</option>
+            }
+        </select>
+    </div>
+
+    <button class="btn btn-primary" @onclick="CargarUsuario">Cargar Usuario</button>
+    <button class="btn btn-danger" @onclick="EliminarUsuarioSeleccionado">Eliminar Usuario</button>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">
+            <p>@errorMessage</p>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <div class="alert alert-success">
+            <p>@successMessage</p>
+        </div>
+    }
+
+    @if (usuarioSeleccionado != null)
+    {
+        <div class="mb-3">
+            <label for="email">Email:</label>
+            <p>@usuarioSeleccionado.Email</p>
+        </div>
+
+        <div class="mb-3">
+            <label for="nombre">Nombre:</label>
+            <p>@usuarioSeleccionado.Nombre</p>
+        </div>
+
+        <div class="mb-3">
+            <label for="apellido">Apellido:</label>
+            <p>@usuarioSeleccionado.Apellido</p>
+        </div>
+
+        <div class="mb-3">
+            <label for="esAdmin">Es Admin:</label>
+            @if (usuarioSeleccionado.EsAdmin)
+            {
+                <p>Si</p>
+            }
+            else
+            {
+                <p>No</p>
+            }
+        </div>
+    }
+}
+else
+{
+    <h3>Error de acceso!</h3>
+    <h4>Acceso denegado por falta de permisos</h4>
+}
+
+
+@code {
+    private List<Usuario> usuarios = new List<Usuario>();
+    private string? emailSeleccionado;
+    private Usuario? usuarioSeleccionado;
+    private string successMessage;
+    private string errorMessage;
+    private bool firstRender = true;
+
+
+    protected override void OnInitialized()
+    {
+        if(sesionLogic.UsuarioLogueado != null)
+        {
+            usuarios = usuarioLogic.ListarUsuarios(sesionLogic.UsuarioLogueado);
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        {
+            if (sesionLogic.UsuarioLogueado == null)
+            {
+                Navigation.NavigateTo("https://localhost:7014/", true);
+            }
+            firstRender = false;
+        }
+    }
+
+    private void CargarUsuario()
+    {
+        if (!string.IsNullOrEmpty(emailSeleccionado))
+        {
+            usuarioSeleccionado = usuarios.FirstOrDefault(u => u.Email == emailSeleccionado);
+            errorMessage = null;
+            successMessage = null;
+        }
+    }
+
+    private void EliminarUsuarioSeleccionado()
+    {
+        if (usuarioSeleccionado != null)
+        {
+            if (usuarioSeleccionado.Email == sesionLogic.UsuarioLogueado.Email)
+            {
+                errorMessage = "No puede eliminar su propio usuario.";
+                return;
+            }
+            usuarioLogic.EliminarUsuario(usuarioSeleccionado, sesionLogic.UsuarioLogueado);
+            usuarios.Remove(usuarioSeleccionado);
+            usuarioSeleccionado = null;
+            errorMessage = null;
+            successMessage = "Usuario eliminado correctamente.";
+        }
+        else
+        {
+            successMessage = null;
+            errorMessage = "Debe cargar el usuario para poder eliminarlo.";
+        }
+    }
+
+}

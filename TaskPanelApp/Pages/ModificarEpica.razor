@@ -1,0 +1,322 @@
+﻿@page "/ModificarEpica"
+@using BusinessLogic
+@using BusinessLogic.Interfaces
+@using DTOs
+@using Domain
+@inject IEquipoLogic equipoLogic
+@inject SesionLogic sesionLogic
+@inject IEpicaLogic epicaLogic;
+@inject IPanelLogic panelLogic;
+@inject NavigationManager Navigation
+
+<h3>Modificar Epica</h3>
+
+<div class="mb-3 d-flex align-items-center">
+    <label for="equipoSelect" class="me-2">Seleccionar Equipo:</label>
+    <select id="equipoSelect" class="form-control me-2" @bind="nombreEquipoSeleccionado">
+        <option value="">Seleccione un equipo</option>
+        @foreach (var equipo in equipos)
+        {
+        <option value="@equipo.Nombre">@equipo.Nombre</option>
+        }
+    </select>
+    <button class="btn btn-primary" @onclick="CargarEquipo">Cargar Equipo</button>
+</div>
+
+@if (equipoSeleccionado != null)
+{
+<div class="mb-3 d-flex align-items-center">
+    <label for="panelSelect" class="me-2">Seleccionar Panel:</label>
+    <select id="panelSelect" class="form-control me-2" @bind="nombrePanelSeleccionado">
+        <option value="">Seleccione un panel</option>
+        @foreach (var panel in paneles)
+        {
+        <option value="@panel.Nombre">@panel.Nombre</option>
+        }
+    </select>
+    <button class="btn btn-primary" @onclick="CargarPanel">Cargar Panel</button>
+</div>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+<div class="alert alert-danger">
+    <p>@errorMessage</p>
+</div>
+}
+@if (!string.IsNullOrEmpty(successMessage))
+{
+<div class="alert alert-success">
+    <p>@successMessage</p>
+</div>
+}
+@if (panelSeleccionado != null)
+{
+<div class="mb-3 d-flex align-items-center">
+    <label for="epicaSelect" class="me-2">Seleccionar Epica:</label>
+    <select id="epicaSelect" class="form-control me-2" @bind="tituloEpicaSeleccionada">
+        <option value="">Seleccione una epica</option>
+        @foreach (var epica in epicas)
+        {
+        <option value="@epica.Titulo">@epica.Titulo</option>
+        }
+    </select>
+    <button class="btn btn-primary" @onclick="CargarEpica">Cargar Epica</button>
+</div>
+}
+@if (epicaSeleccionada != null)
+{
+    <div class="mb-3">
+        <label for="titulo">Titulo:</label>
+        @if (editandoTitulo)
+        {
+            <input id="titulo" type="text" class="form-control" maxlength="50" @bind="nuevoTitulo"/>
+            <button class="btn btn-success" @onclick="GuardarTitulo">Guardar</button>
+        }
+        else
+        {
+            <p>@epicaSeleccionada.Titulo</p>
+            <button class="btn btn-primary" @onclick="EditarTitulo">Modificar Titulo</button>
+        }
+    </div>
+    <div class="mb-3">
+        <label for="descripcion">Descripcion:</label>
+        @if (editandoDescripcion)
+        {
+            <input id="descripcion" type="text" class="form-control" maxlength="50" @bind="nuevaDescripcion"/>
+            <button class="btn btn-success" @onclick="GuardarDescripcion">Guardar</button>
+        }
+        else
+        {
+            <p>@epicaSeleccionada.Descripcion</p>
+            <button class="btn btn-primary" @onclick="EditarDescripcion">Modificar Descripcion</button>
+        }
+    </div>
+    <div class="mb-3">
+        <label for="tareaSelect">Seleccionar tarea:</label>
+        <select id="tareaSelect" class="form-control" @bind="tituloTareaSeleccionada">
+            <option value="">Seleccione una tarea</option>
+                @foreach (var tarea in tareasDisponibles)
+                {
+                    <option value="@tarea.Titulo">@tarea.Titulo</option>
+                }
+        </select>
+    </div>
+    
+    <button class="btn btn-primary" @onclick="AgregarTarea">Agregar tarea</button>
+    
+    <hr/>
+    <div class="mb-3">
+        <label for="tareaSelect">Seleccionar tarea:</label>
+        <select id="tareaSelect" class="form-control" @bind="tituloTareaSeleccionadaParaEliminar">
+            <option value="">Seleccione una tarea</option>
+            @foreach (var tarea in tareasDisponiblesParaEliminar)
+            {
+                <option value="@tarea.Titulo">@tarea.Titulo</option>
+            }
+        </select>
+    </div>
+
+    <button class="btn btn-danger" @onclick="EliminarTarea">Eliminar tarea</button>
+}
+
+@code {
+    private List<Equipo> equipos = new List<Equipo>();
+    private string? nombreEquipoSeleccionado, nombrePanelSeleccionado, tituloEpicaSeleccionada, errorMessage, nuevoTitulo, successMessage, nuevaDescripcion;
+    private int nuevoEsfuerzoInvertido;
+    private Equipo? equipoSeleccionado;
+    private List<Panel> paneles = new List<Panel>();
+    private Panel? panelSeleccionado;
+    private List<Epica> epicas = new List<Epica>();
+    private Epica? epicaSeleccionada;
+    private bool editandoTitulo = false;
+    private bool editandoDescripcion = false;
+    private bool firstRender = true;
+    private List<Tarea> tareasDisponibles = new List<Tarea>();
+    private string tituloTareaSeleccionada;
+    private Tarea tareaSeleccionada;
+    private List<Tarea>? tareasDisponiblesParaEliminar = new List<Tarea>();
+    private string tituloTareaSeleccionadaParaEliminar;
+    private Tarea tareaSeleccionadaParaEliminar;
+
+    protected override void OnInitialized()
+    {
+        if (sesionLogic.UsuarioLogueado != null)
+        {
+            equipos = equipoLogic.ListarEquipos(sesionLogic.UsuarioLogueado);
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        {
+            if (sesionLogic.UsuarioLogueado == null)
+            {
+                Navigation.NavigateTo("https://localhost:7014/", true);
+            }
+
+            firstRender = false;
+        }
+    }
+
+    private void CargarEquipo()
+    {
+        if (!string.IsNullOrEmpty(nombreEquipoSeleccionado))
+        {
+            equipoSeleccionado = equipos.FirstOrDefault(e => e.Nombre == nombreEquipoSeleccionado);
+            paneles = equipoSeleccionado.Paneles;
+        }
+    }
+
+    private void CargarPanel()
+    {
+        if (!string.IsNullOrEmpty(nombrePanelSeleccionado))
+        {
+            panelSeleccionado = paneles.FirstOrDefault(p => p.Nombre == nombrePanelSeleccionado);
+            epicas = panelSeleccionado.Epicas;
+            CargarListaTareas();
+        }
+    }
+
+    private void CargarEpica()
+    {
+        if (!string.IsNullOrEmpty(tituloEpicaSeleccionada))
+        {
+            epicaSeleccionada = epicas.FirstOrDefault(e => e.Titulo == tituloEpicaSeleccionada);
+        }
+        CargarListaTareasParaEliminar();
+    }
+
+    private void EditarTitulo() => editandoTitulo = true;
+
+    private void GuardarTitulo()
+    {
+
+        try
+        {
+            if (epicaSeleccionada == null)
+            {
+                errorMessage = "No se ha seleccionado una epica.";
+                return;
+            }
+
+            if (string.IsNullOrEmpty(nuevoTitulo))
+            {
+                errorMessage = "El nuevo titulo no puede estar vacío.";
+                return;
+            }
+
+            CambiarTituloEpicaDTO cambiarTituloEpicaDto = new CambiarTituloEpicaDTO(nombreEquipoSeleccionado, nombrePanelSeleccionado, nuevoTitulo, tituloEpicaSeleccionada);
+            epicaLogic.CambiarTitulo(cambiarTituloEpicaDto);
+            tituloEpicaSeleccionada = nuevoTitulo;
+            editandoTitulo = false;
+            errorMessage = null;
+            successMessage = "Titulo modificado con exito";
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+            successMessage = null;
+        }
+    }
+
+    private void EditarDescripcion() => editandoDescripcion = true;
+
+    private void GuardarDescripcion()
+    {
+        try
+        {
+            if (epicaSeleccionada == null)
+            {
+                errorMessage = "No se ha seleccionado un usuario.";
+                return;
+            }
+
+            if (string.IsNullOrEmpty(nuevaDescripcion))
+            {
+                errorMessage = "La nueva descripcion no puede estar vacía.";
+                return;
+            }
+
+            epicaLogic.CambiarDescripcion(nombreEquipoSeleccionado, nombrePanelSeleccionado, nuevaDescripcion, tituloEpicaSeleccionada);
+            epicaSeleccionada.Descripcion = nuevaDescripcion;
+            editandoDescripcion = false;
+            errorMessage = null;
+            successMessage = "Descripcion modificada con exito";
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+            successMessage = null;
+        }
+    }
+    private void CargarListaTareas()
+    {
+        try
+        {
+            tareasDisponibles = panelLogic.ListarTareasSinEpicaAsociada(nombrePanelSeleccionado, nombreEquipoSeleccionado);
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+    }
+
+    private void CargarListaTareasParaEliminar()
+    {
+        try
+        {
+            tareasDisponiblesParaEliminar = panelLogic.ListarTareasPorEpica(nombrePanelSeleccionado, nombreEquipoSeleccionado, tituloEpicaSeleccionada);
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+    }
+
+    private void AgregarTarea()
+    {
+        tareaSeleccionada = tareasDisponibles.FirstOrDefault(t => t.Titulo == tituloTareaSeleccionada);
+        if (tareaSeleccionada == null)
+        {
+            errorMessage = "No se ha seleccionado una tarea.";
+            return;
+        }
+
+        try
+        {
+            epicaLogic.AgregarTarea(nombreEquipoSeleccionado, nombrePanelSeleccionado, tituloEpicaSeleccionada, tareaSeleccionada);
+            CargarListaTareasParaEliminar();
+            CargarListaTareas();
+            errorMessage = null;
+            successMessage = "Tarea agregada correctamente.";
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+    }
+
+    private void EliminarTarea()
+    {
+        tareaSeleccionadaParaEliminar = tareasDisponiblesParaEliminar.FirstOrDefault(t => t.Titulo == tituloTareaSeleccionadaParaEliminar);
+        if (tareaSeleccionadaParaEliminar == null)
+        {
+            errorMessage = "No se ha seleccionado una tarea.";
+            return;
+        }
+        try
+        {
+            epicaLogic.EliminarTarea(nombreEquipoSeleccionado, nombrePanelSeleccionado, tituloEpicaSeleccionada, tareaSeleccionadaParaEliminar);
+            CargarListaTareasParaEliminar();
+            CargarListaTareas();
+            errorMessage = null;
+            successMessage = "Tarea eliminada correctamente.";
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+    }
+}

@@ -1,0 +1,86 @@
+@page "/gestionEquipos"
+@using BusinessLogic
+@using BusinessLogic.Interfaces
+@using Domain
+@inject SesionLogic sesionLogic
+@inject IEquipoLogic equipoLogic
+@inject NavigationManager NavigationManager
+
+
+<h3>Gestión de equipos</h3>
+
+<p>
+    @if (sesionLogic.UsuarioLogueado != null && sesionLogic.UsuarioLogueado.EsAdmin)
+    {
+        <button @onclick="CrearNuevoEquipo" class="btn btn-primary">Crear equipo</button>
+        <a>   </a>
+        <button @onclick="EliminarEquipo" class="btn btn-primary">Eliminar equipo</button>
+        <a>   </a>
+        @* al equipo se le agregan nuevos usuarios dentro de modificar equipo*@
+        <button @onclick="ModificarEquipo" class="btn btn-primary">Modificar equipo</button>
+    }
+</p>
+
+<h5>Lista de equipos:</h5>
+
+@if (_equipos.Count > 0)
+{
+<ul>
+    @foreach (var equipo in _equipos)
+    {
+    <li>@equipo.Nombre</li>
+    }
+</ul>
+}
+else
+{
+<p>No hay equipos para mostrar</p>
+}
+
+@code {
+    private List<Equipo> _equipos = new List<Equipo>();
+    private bool firstRender = true;
+
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            if(sesionLogic.UsuarioLogueado != null)
+            {
+                _equipos = equipoLogic.ListarEquipos(sesionLogic.UsuarioLogueado);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error al cargar la lista de equipos: " + e.Message);
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        {
+            if (sesionLogic.UsuarioLogueado == null)
+            {
+                NavigationManager.NavigateTo("https://localhost:7014/", true);
+            }
+            firstRender = false;
+        }
+    }
+    
+    private void CrearNuevoEquipo()
+    {
+        NavigationManager.NavigateTo("/CrearNuevoEquipo");
+    }
+    
+    private void EliminarEquipo()
+    {
+        NavigationManager.NavigateTo("/EliminarEquipo");
+    }
+    
+    private void ModificarEquipo()
+    {
+        NavigationManager.NavigateTo("/ModificarEquipo");
+    }
+}

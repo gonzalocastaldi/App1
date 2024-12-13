@@ -1,0 +1,284 @@
+@page "/modificarEquipo"
+@using BusinessLogic
+@using BusinessLogic.Interfaces
+@using Domain
+@inject IEquipoLogic equipoLogic
+@inject IUsuarioLogic usuarioLogic
+@inject NavigationManager NavigationManager
+@inject SesionLogic sesionLogic
+
+@if (sesionLogic.UsuarioLogueado != null && sesionLogic.UsuarioLogueado.EsAdmin)
+{
+    <h3>Modificar equipo</h3>
+
+    <div class="mb-3">
+        <label for="equipoSelect">Seleccionar equipo:</label>
+        <select id="equipoSelect" class="form-control" @bind="_nombreEquipo">
+            <option value="">Seleccione un equipo</option>
+            @foreach (var equipo in _equipos)
+            {
+                <option value="@equipo.Nombre">@equipo.Nombre</option>
+            }
+        </select>
+    </div>
+
+    <button class="btn btn-primary" @onclick="CargarEquipo">Cargar equipo</button>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <div class="alert alert-success">@successMessage</div>
+    }
+    
+    @if (_equipoAModificar != null)
+    {
+        <div class="mb-3">
+            <label for="nombre">Nombre:</label>
+            @if (editandoNombre)
+            {
+                <input id="nombre" type="text" class="form-control" maxlength="50" @bind="nuevoNombre" required />
+                <button class="btn btn-success" @onclick="GuardarNombre">Guardar</button>
+            }
+            else
+            {
+                <p>@_equipoAModificar.Nombre</p>
+                <button class="btn btn-primary" @onclick="EditarNombre">Modificar Nombre</button>
+            }
+        </div>
+
+        <div class="mb-3">
+            <label for="fechaCreacion">Fecha de creación:</label>
+            <p>@_equipoAModificar.FechaCreacion.ToString("dd/MM/yyyy")</p>
+        </div>
+
+        <div class="mb-3">
+            <label for="descripcion">Descripción:</label>
+            @if (editandoDescripcion)
+            {
+                <input id="descripcion" type="text" class="form-control" maxlength="50" @bind="nuevaDescripcion" />
+                <button class="btn btn-success" @onclick="GuardarDescripcion">Guardar</button>
+            }
+            else
+            {
+                <p>@_equipoAModificar.Descripcion</p>
+                <button class="btn btn-primary" @onclick="EditarDescripcion">Modificar Descripción</button>
+            }
+        </div>
+
+        <div class="mb-3">
+            <label for="cantidadUsuarios">Cantidad de usuarios:</label>
+            <p>@_equipoAModificar.CantidadActualUsuarios</p>
+        </div>
+
+        <div class="mb-3">
+            <label for="cantidadMaxUsuarios">Cantidad máxima de usuarios:</label>
+            @if (editandoCantidadMaxima)
+            {
+                <input id="cantidadMaxUsuarios" type="number" class="form-control" @bind="nuevaCantidadMaxima" min="@_equipoAModificar.CantidadActualUsuarios" required/>
+                <button class="btn btn-success" @onclick="GuardarCantidadMaxima">Guardar</button>
+            }
+            else
+            {
+                <p>@_equipoAModificar.CantidadMaxima</p>
+                <button class="btn btn-primary" @onclick="EditarCantidadMaxima">Modificar Cantidad Máxima</button>
+            }
+        </div>
+
+        <div class="mb-3">
+            <label for="usuarioSelect">Seleccionar usuario:</label>
+            <select id="usuarioSelect" class="form-control" @bind="_emailUsuarioSeleccionado">
+                <option value="">Seleccione un usuario</option>
+                @if (_usuariosDisponibles != null)
+                {
+                    @foreach (var usuario in _usuariosDisponibles)
+                    {
+                        <option value="@usuario.Email">@usuario.Email</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <button class="btn btn-primary" @onclick="AgregarUsuario">Agregar usuario</button>
+    }
+}
+else
+{
+    <h3>Error de acceso!</h3>
+    <h4>Acceso denegado por falta de permisos</h4>
+}
+
+@code {
+    private List<Equipo> _equipos = new List<Equipo>();
+    private List<Usuario> _usuariosDisponibles = new List<Usuario>();
+    private string? _emailUsuarioSeleccionado, errorMessage, nuevoNombre, nuevaDescripcion, successMessage;
+    private Usuario? _usuarioSeleccionado;
+    private string _nombreEquipo;
+    private Equipo _equipoAModificar;
+    private Usuario _UsuarioLogueado;
+    private bool editandoNombre, editandoDescripcion, editandoCantidadMaxima;
+    private int nuevaCantidadMaxima;
+    private bool firstRender = true;
+
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            if(sesionLogic.UsuarioLogueado != null){
+                _UsuarioLogueado = sesionLogic.UsuarioLogueado;
+                _equipos = equipoLogic.ListarEquipos(_UsuarioLogueado);
+                CargarListaUsuarios();
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        {
+            if (sesionLogic.UsuarioLogueado == null)
+            {
+                NavigationManager.NavigateTo("https://localhost:7014/", true);
+            }
+            firstRender = false;
+        }
+    }
+
+    private void CargarEquipo()
+    {
+        if (!string.IsNullOrEmpty(_nombreEquipo))
+        {
+            _equipoAModificar = _equipos.FirstOrDefault(e => e.Nombre == _nombreEquipo);
+            errorMessage = null;
+            successMessage = null;
+        }
+    }
+
+    private void EditarNombre() => editandoNombre = true;
+
+    private void GuardarNombre()
+    {
+        try
+        {
+            equipoLogic.CambiarNombre(_equipoAModificar.Nombre, nuevoNombre, _UsuarioLogueado);
+            errorMessage = null;
+            successMessage = "Nombre cambiado exitosamente.";
+            editandoNombre = false;
+            OnInitialized();
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+    }
+
+    private void EditarDescripcion() => editandoDescripcion = true;
+
+    private void GuardarDescripcion()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(nuevaDescripcion))
+            {
+                errorMessage = "La descripción no puede ser vacía.";
+            }
+            else
+            {
+                equipoLogic.CambiarDescripcion(_equipoAModificar.Nombre, nuevaDescripcion, _UsuarioLogueado);
+                errorMessage = null;
+                successMessage = "Descripción cambiada exitosamente.";
+                editandoDescripcion = false;
+            }
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+    }
+
+    private void CargarListaUsuarios()
+    {
+        try
+        {
+            _usuariosDisponibles = usuarioLogic.ListarUsuarios(_UsuarioLogueado);
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+    }
+
+    private async Task AgregarUsuario()
+    {
+        try
+        {
+            _usuarioSeleccionado = BuscarUsuarioSeleccionado(_emailUsuarioSeleccionado);
+            ValidarUsuarioExistente(_usuarioSeleccionado);
+            ValidarCantidadMaximaUsuarios();
+            equipoLogic.AgregarUsuario(_usuarioSeleccionado, _nombreEquipo, _UsuarioLogueado);
+            errorMessage = null;
+            successMessage = "Usuario agregado correctamente.";
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+    }
+
+    private Usuario BuscarUsuarioSeleccionado(string email)
+    {
+        try
+        {
+            Usuario usuario;
+            usuario = _usuariosDisponibles.FirstOrDefault(u => u.Email == _emailUsuarioSeleccionado);
+            return usuario;
+        }
+        catch (NullReferenceException)
+        {
+            throw new InvalidOperationException("El usuario seleccionado no puede ser nulo.");
+        }
+    }
+    
+    private void ValidarUsuarioExistente(Usuario usuario)
+    {
+        if (_equipoAModificar.Usuarios.Any(u => u.Email == usuario.Email))
+        {
+            throw new InvalidOperationException("El usuario ya existe en el equipo.");
+        }
+    }
+
+    private void ValidarCantidadMaximaUsuarios()
+    {
+        if (_equipoAModificar.CantidadActualUsuarios >= _equipoAModificar.CantidadMaxima)
+        {
+            throw new InvalidOperationException("Se ha alcanzado la cantidad máxima de usuarios para el equipo.");
+        }
+    }
+    
+    private void EditarCantidadMaxima() => editandoCantidadMaxima = true;
+
+    private void GuardarCantidadMaxima()
+    {
+        try
+        {
+            successMessage = null;
+            errorMessage = null;
+            equipoLogic.CambiarCantidadMaximaDeUsuarios(_equipoAModificar.Nombre, nuevaCantidadMaxima, _UsuarioLogueado);
+            successMessage = "Cantidad máxima de usuarios cambiada exitosamente.";
+            editandoCantidadMaxima = false;
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+    }
+}

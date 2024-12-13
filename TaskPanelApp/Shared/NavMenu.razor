@@ -1,0 +1,103 @@
+﻿@using BusinessLogic
+@using TaskPanelApp.Pages
+@inject SesionLogic sesionLogic
+@inject NavigationManager NavigationManager
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand">TaskPanelApp</a>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/inicio" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Inicio
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/gestionUsuarios" Match="NavLinkMatch.All">
+                <span class="oi oi-person" aria-hidden="true"></span> Gestión de usuarios
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/gestionEquipos" Match="NavLinkMatch.All">
+                <span class="oi oi-people" aria-hidden="true"></span> Gestión de equipos
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/agregarPanel" Match="NavLinkMatch.All">
+                <span class="oi oi-plus" aria-hidden="true"></span> Agregar panel
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/modificarPanel" Match="NavLinkMatch.All">
+                <span class="oi oi-pencil" aria-hidden="true"></span> Modificar panel
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/eliminarPanel" Match="NavLinkMatch.All">
+                <span class="oi oi-delete" aria-hidden="true"></span> Eliminar panel
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/agregarTarea" Match="NavLinkMatch.All">
+                <span class="oi oi-task" aria-hidden="true"></span> Agregar tarea
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/gestionPaneles" Match="NavLinkMatch.All">
+                <span class="oi oi-book" aria-hidden="true"></span> Gestión de paneles
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/gestionEpicas" Match="NavLinkMatch.All">
+                <span class="oi oi-laptop" aria-hidden="true"></span> Gestión de épicas
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/manejoArchivosImportacion" Match="NavLinkMatch.All">
+                <span class="oi oi-file" aria-hidden="true"></span> Archivos de importación
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/papelera" Match="NavLinkMatch.All">
+                <span class="oi oi-trash" aria-hidden="true"></span> Papelera
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/Notificaciones" Match="NavLinkMatch.All">
+                <span class="oi oi-bell" aria-hidden="true"></span> Notificaciones
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/ReporteDeEsfuerzo" Match="NavLinkMatch.All">
+                <span class="oi oi-laptop" aria-hidden="true"></span> Reporte de esfuerzo
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All" @onclick="Logout">
+                <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
+            </NavLink>
+        </div>
+
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    public void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    private void Logout()
+    {
+        sesionLogic.CerrarSesion();
+        NavigationManager.NavigateTo("/");
+    }
+}

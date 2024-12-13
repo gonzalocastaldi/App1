@@ -1,0 +1,117 @@
+﻿@page "/agregarUsuario"
+@using BusinessLogic
+@using BusinessLogic.Interfaces
+@using DTOs
+@using Domain
+@inject IUsuarioLogic usuarioLogic
+@inject NavigationManager NavigationManager
+@inject SesionLogic sesionLogic
+
+@if (sesionLogic.UsuarioLogueado != null && sesionLogic.UsuarioLogueado.EsAdmin)
+{
+    <h3>Agregar nuevo usuario</h3>
+
+    <form @onsubmit="CrearUsuario">
+        <div class="mb-3">
+            <label for="email">Email:</label>
+            <input id="email" type="text" class="form-control" maxlength="50" @bind="email" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="nombre">Nombre:</label>
+            <input id="nombre" type="text" class="form-control" maxlength="50" @bind="nombre" required/>
+        </div>
+
+        <div class="mb-3">
+            <label for="apellido">Apellido:</label>
+            <input id="apellido" type="text" class="form-control" maxlength="50" @bind="apellido" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="fechaNacimiento">Fecha de Nacimiento:</label>
+            <input id="fechaNacimiento" type="date" class="form-control" @bind="fechaNacimiento" required/>
+        </div>
+
+        <div class="mb-3">
+            <label for="contrasena">Contraseña:</label>
+            <input id="contrasena" type="password" class="form-control" maxlength="50" @bind="contraseña" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="esAdmin">Es Admin:</label>
+            <input id="esAdmin" type="checkbox" class="form-check-input" @bind="esAdmin"/>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </form>
+
+    @if (validationError != null)
+    {
+        <div class="alert alert-danger">
+            <p>@validationError</p>
+        </div>
+    }
+}
+else
+{
+    <h3>Error de acceso!</h3>
+    <h4>Acceso denegado por falta de permisos</h4>
+}
+
+
+@code {
+    private Usuario usuario = new Usuario();
+    private string validationError, contraseña, email, nombre, apellido;
+    private DateTime fechaNacimiento;
+    private bool esAdmin;
+    UsuarioDTO user = new UsuarioDTO();
+    private bool firstRender = true;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        {
+            if (sesionLogic.UsuarioLogueado == null)
+            {
+                NavigationManager.NavigateTo("https://localhost:7014/", true);
+            }
+            firstRender = false;
+        }
+    }
+
+    private void CrearUsuario()
+    {
+        try
+        {
+            user.EsAdmin = esAdmin;
+            user.Nombre = nombre;
+            user.Apellido = apellido;
+            user.Email = email;
+            user.FechaNacimiento = fechaNacimiento;
+            user.Contrasena = contraseña;
+
+            validationError = usuarioLogic.ValidarYGuardarUsuario(user);
+            if (validationError == null)
+            {
+                LimpiarFormulario();
+                VolverAlMenu();
+            }
+        }
+        catch (Exception e)
+        {
+            validationError = e.Message;
+        }
+    }
+
+    private void LimpiarFormulario()
+    {
+        if (string.IsNullOrEmpty(validationError))
+        {
+            usuario = new Usuario();
+        }
+    }
+    private void VolverAlMenu()
+    {
+        NavigationManager.NavigateTo("/gestionUsuarios");
+    }
+}

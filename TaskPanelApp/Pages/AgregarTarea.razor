@@ -1,0 +1,159 @@
+﻿@page "/AgregarTarea"
+@using Domain
+@using BusinessLogic
+@using BusinessLogic.Interfaces
+@inject IEquipoLogic equipoLogic
+@inject IPanelLogic panelLogic
+@inject SesionLogic sesionLogic
+@inject NavigationManager Navigation
+
+
+<h3>Agregar Tarea</h3>
+
+<div class="mb-3 d-flex align-items-center">
+    <label for="equipoSelect" class="me-2">Seleccionar Equipo:</label>
+    <select id="equipoSelect" class="form-control me-2" @bind="nombreEquipoSeleccionado">
+        <option value="">Seleccione un equipo</option>
+        @foreach (var equipo in equipos)
+        {
+        <option value="@equipo.Nombre">@equipo.Nombre</option>
+        }
+    </select>
+    <button class="btn btn-primary" @onclick="CargarEquipo">Cargar Equipo</button>
+</div>
+
+@if (equipoSeleccionado != null)
+{
+<div class="mb-3 d-flex align-items-center">
+    <label for="panelSelect" class="me-2">Seleccionar Panel:</label>
+    <select id="panelSelect" class="form-control me-2" @bind="nombrePanelSeleccionado">
+        <option value="">Seleccione un panel</option>
+        @foreach (var panel in paneles.Where(p => p.Nombre != "Tareas Vencidas"))
+        {
+        <option value="@panel.Nombre">@panel.Nombre</option>
+        }
+    </select>
+    <button class="btn btn-primary" @onclick="CargarPanel">Cargar Panel</button>
+</div>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+<div class="alert alert-danger">
+    <p>@errorMessage</p>
+</div>
+}
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+<div class="alert alert-success">
+    <p>@successMessage</p>
+</div>
+}
+
+@if (panelSeleccionado != null)
+{
+    <div class="mb-3">
+        <label>Nombre del panel: </label>
+        <p>@panelSeleccionado.Nombre</p>
+    </div>
+
+    <form @onsubmit="CrearTarea">
+        <div class="mb-3">
+            <label for="titulo">Titulo:</label>
+            <input id="titulo" type="text" class="form-control" maxlength="50" @bind="tarea.Titulo" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="descripcion">Descripcion:</label>
+            <input id="descripcion" type="text" class="form-control" maxlength="50" @bind="tarea.Descripcion" required />
+        </div>
+        <div class="mb-3">
+            <label for="fechaExpiracion">Fecha expiracion:</label>
+            <input id="fechaExpiracion" type="date" class="form-control" @bind="fechaExpiracion" min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="mb-3">
+            <label for="prioridad">Prioridad:</label>
+            <select id="prioridad" class="form-control" maxlengrth="10" @bind="prioridad" required>
+                <option value="0">Baja</option>
+                <option value="1">Media</option>
+                <option value="2">Urgente</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="esfuerzoEstimado">Esfuerzo Estimado (en hs):</label>
+            <input id="esfuerzoEstimado" type="number" class="form-control" @bind="tarea.EsfuerzoEstimado" min="1" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Agregar</button>
+    </form>
+
+    @code {
+    private List<Equipo> equipos = new List<Equipo>();
+    private string? nombreEquipoSeleccionado, nombrePanelSeleccionado, errorMessage, successMessage;
+    private Equipo? equipoSeleccionado;
+    private List<Panel> paneles = new List<Panel>();
+    private Panel panelSeleccionado;
+    private Tarea tarea = new Tarea();
+    private DateTime fechaExpiracion;
+    private int prioridad;
+    private bool firstRender = true;
+
+    protected override void OnInitialized()
+    {
+        if(sesionLogic.UsuarioLogueado != null)
+        {
+            equipos = equipoLogic.ListarEquipos(sesionLogic.UsuarioLogueado);
+        }
+    }
+    
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        {
+            if (sesionLogic.UsuarioLogueado == null)
+            {
+                Navigation.NavigateTo("https://localhost:7014/", true);
+            }
+            firstRender = false;
+        }
+    }
+
+    private void CargarEquipo()
+    {
+        if (!string.IsNullOrEmpty(nombreEquipoSeleccionado))
+        {
+            equipoSeleccionado = equipos.FirstOrDefault(e => e.Nombre == nombreEquipoSeleccionado);
+            paneles = equipoLogic.ListarPaneles(equipoSeleccionado.Nombre);
+        }
+    }
+    private void CargarPanel()
+    {
+        if (!string.IsNullOrEmpty(nombrePanelSeleccionado))
+        {
+            panelSeleccionado = paneles.FirstOrDefault(p => p.Nombre == nombrePanelSeleccionado);
+        }
+    }
+    private void CrearTarea()
+    {
+        tarea.PanelActual = panelSeleccionado;
+        tarea.PanelOriginal = panelSeleccionado;
+        tarea.FechaExpiracion = fechaExpiracion;
+        tarea.Prioridad = (Prioridad)prioridad;
+        errorMessage = panelLogic.ValidarYGuardarTarea(tarea, panelSeleccionado, sesionLogic.UsuarioLogueado);
+        if(errorMessage == null)
+        {
+            LimpiarFormulario();
+        }
+    }
+    private void LimpiarFormulario()
+    {
+        if (string.IsNullOrEmpty(errorMessage))
+        {
+            tarea = new Tarea();
+            successMessage = "Tarea agregada con éxito";
+        }
+    }
+}
+
+}

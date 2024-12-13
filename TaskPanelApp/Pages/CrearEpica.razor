@@ -1,0 +1,151 @@
+﻿@page "/CrearEpica"
+@using BusinessLogic
+@using BusinessLogic.Interfaces
+@using Domain
+@inject IEquipoLogic equipoLogic
+@inject IPanelLogic panelLogic
+@inject SesionLogic sesionLogic
+@inject NavigationManager Navigation
+
+<h3>Crear épica</h3>
+
+<div class="mb-3 d-flex align-items-center">
+    <label for="equipoSelect" class="me-2">Seleccionar Equipo:</label>
+    <select id="equipoSelect" class="form-control me-2" @bind="nombreEquipoSeleccionado">
+        <option value="">Seleccione un equipo</option>
+        @foreach (var equipo in equipos)
+        {
+            <option value="@equipo.Nombre">@equipo.Nombre</option>
+        }
+    </select>
+    <button class="btn btn-primary" @onclick="CargarEquipo">Cargar Equipo</button>
+</div>
+
+@if (equipoSeleccionado != null)
+{
+    <div class="mb-3 d-flex align-items-center">
+        <label for="panelSelect" class="me-2">Seleccionar Panel:</label>
+        <select id="panelSelect" class="form-control me-2" @bind="nombrePanelSeleccionado">
+            <option value="">Seleccione un panel</option>
+            @foreach (var panel in paneles)
+            {
+                <option value="@panel.Nombre">@panel.Nombre</option>
+            }
+        </select>
+        <button class="btn btn-primary" @onclick="CargarPanel">Cargar Panel</button>
+    </div>
+}
+
+@if (panelSeleccionado != null)
+{
+    <form @onsubmit="CrearNuevaEpica">
+        <div class="mb-3">
+            <label for="titulo">Titulo:</label>
+            <input id="titulo" type="text" class="form-control" maxlength="50" @bind="epica.Titulo" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="prioridad">Prioridad:</label>
+            <select id="prioridad" class="form-control" maxlengrth="10" @bind="prioridad" required>
+                <option value="0">Baja</option>
+                <option value="1">Media</option>
+                <option value="2">Urgente</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="descripcion">Descripcion:</label>
+            <input id="descripcion" type="text" class="form-control" maxlength="50" @bind="epica.Descripcion" required />
+        </div>
+        
+        <div class="mb-3">
+            <label for="fechaExpiracion">Fecha expiracion:</label>
+            <input id="fechaExpiracion" type="date" class="form-control" @bind="fechaVencimiento" min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Agregar</button>
+    </form>
+}
+
+@if (!string.IsNullOrEmpty(validationError))
+{
+    <div class="alert alert-danger">
+        <p>@validationError</p>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="alert alert-success">
+        <p>@successMessage</p>
+    </div>
+}
+
+@code {
+    private List<Equipo> equipos = new List<Equipo>();
+    private string? nombreEquipoSeleccionado;
+    private Equipo? equipoSeleccionado;
+    private List<Panel> paneles = new List<Panel>();
+    private string? nombrePanelSeleccionado;
+    private Panel panelSeleccionado;
+    private int prioridad;
+    private Epica epica = new Epica();
+    private DateTime fechaVencimiento;
+    private string? validationError;
+    private string? successMessage;
+    
+    protected override void OnInitialized()
+    {
+        if(sesionLogic.UsuarioLogueado != null)
+        {
+            equipos = equipoLogic.ListarEquipos(sesionLogic.UsuarioLogueado);
+        }
+    }
+    
+    private void CargarEquipo()
+    {
+        if (!string.IsNullOrEmpty(nombreEquipoSeleccionado))
+        {
+            equipoSeleccionado = equipos.FirstOrDefault(e => e.Nombre == nombreEquipoSeleccionado);
+            paneles = equipoSeleccionado.Paneles;
+        }
+    }
+
+    private void CargarPanel()
+    {
+        panelSeleccionado = equipoSeleccionado.Paneles.FirstOrDefault(p => p.Nombre == nombrePanelSeleccionado);
+    }
+
+    private void CrearNuevaEpica()
+    {
+        validationError = panelLogic.ValidarYGuardarEpica(equipoSeleccionado.Nombre, epica, panelSeleccionado, sesionLogic.UsuarioLogueado);
+        if (validationError == null)
+        {
+            LimpiarFormulario();
+            panelSeleccionado = null;
+            equipoSeleccionado = null;
+            successMessage = "Epica creada correctamente";
+        }
+    }
+    
+    private void LimpiarFormulario()
+    {
+        epica = new Epica();
+        nombreEquipoSeleccionado = null;
+        nombrePanelSeleccionado = null;
+        prioridad = 0;
+        fechaVencimiento = DateTime.Now;
+    }
+    
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        {
+            if (sesionLogic.UsuarioLogueado == null)
+            {
+                Navigation.NavigateTo("https://localhost:7014/", true);
+            }
+            firstRender = false;
+        }
+    }
+}

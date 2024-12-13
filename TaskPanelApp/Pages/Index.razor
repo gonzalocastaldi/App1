@@ -1,0 +1,85 @@
+﻿@page "/"
+@using BusinessLogic
+@using BusinessLogic.Interfaces
+@using Domain
+@inject SesionLogic sesionLogic
+@inject NavigationManager NavigationManager
+@inject IUsuarioLogic usuarioLogic
+
+<PageTitle>TaskPanel</PageTitle>
+
+<h1>Login</h1>
+
+<form @onsubmit="HandleLogin">
+    <br/>
+    <div class="form-group">
+        <label for="Name">Email:</label>
+        <input id="Name" class="form-control" maxlength="50" @bind="email"/>
+    </div>
+
+    <br/>
+    <div class="form-group">
+        <label for="Password">Contraseña:</label>
+        <input id="Password" type="password" class="form-control" maxlength="50" @bind="contrasena"/>
+    </div>
+    
+    <br/>
+    <button type="submit" class="btn btn-primary">Login</button>
+</form>
+
+@if (!string.IsNullOrEmpty(mensajeDeError))
+{
+    <br/>
+    <div class="alert alert-danger" role="alert">
+        @mensajeDeError
+    </div>
+}
+
+@if (monstrarMensajeDeLogin)
+{
+    <br/>
+    <div class="alert alert-success" role="alert">
+        ¡Logueado con exito! Redireccionando...
+    </div>
+}
+
+@code {
+    Usuario usuario;
+    private string email = string.Empty;
+    private string contrasena = string.Empty;
+    private string mensajeDeError;
+    private bool monstrarMensajeDeLogin = false;
+    
+    protected override void OnInitialized()
+    {
+        
+        usuario = new Usuario();
+    }
+
+    private async Task HandleLogin()
+    {
+        try
+        {
+            usuario.Email = email;
+            usuario.Contrasena = contrasena;
+            usuarioLogic.IniciarSesion(usuario);
+            monstrarMensajeDeLogin = true;
+            await Task.Delay(1000);
+            NavigationManager.NavigateTo("/inicio");
+            ResetValues();
+        }
+        catch (Exception ex)
+        {
+            
+            mensajeDeError = ex.Message;
+        }
+    }
+
+    private void ResetValues()
+    {
+        email = string.Empty;
+        contrasena = string.Empty;
+        mensajeDeError = null; 
+    }
+
+}

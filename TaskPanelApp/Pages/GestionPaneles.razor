@@ -1,0 +1,423 @@
+@page "/gestionPaneles"
+@using BusinessLogic
+@using BusinessLogic.Interfaces
+@using DTOs
+@using Domain
+@inject IEquipoLogic equipoLogic
+@inject ITareaLogic tareaLogic
+@inject IComentarioLogic comentarioLogic
+@inject IPanelLogic panelLogic
+@inject SesionLogic sesionLogic
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+
+
+<h3>Gestión de Paneles</h3>
+
+
+<div class="mb-3 d-flex align-items-center">
+    <label for="equipoSelect" class="me-2">Seleccionar Equipo:</label>
+    <select id="equipoSelect" class="form-control me-2" @bind="nombreEquipoSeleccionado">
+        <option value="">Seleccione un equipo</option>
+        @foreach (var equipo in equipos)
+        {
+        <option value="@equipo.Nombre">@equipo.Nombre</option>
+        }
+    </select>
+    <button class="btn btn-primary" @onclick="CargarEquipo">Cargar Equipo</button>
+</div>
+
+@if (equipoSeleccionado != null)
+{
+    <div class="mb-3 d-flex align-items-center">
+        <label for="panelSelect" class="me-2">Seleccionar Panel:</label>
+        <select id="panelSelect" class="form-control me-2" @bind="nombrePanelSeleccionado">
+            <option value="">Seleccione un panel</option>
+            @foreach (var panel in paneles.Where(p => p.Nombre != "Tareas Vencidas"))
+            {
+                <option value="@panel.Nombre">@panel.Nombre</option>
+            }
+        </select>
+        <button class="btn btn-primary" @onclick="CargarPanel">Cargar Panel</button>
+    </div>
+}
+@if (panelSeleccionado != null)
+{
+<div class="mb-3 d-flex align-items-center">
+    <label for="epicaSelect" class="me-2">Seleccionar Épica:</label>
+    <select id="epicaSelect" class="form-control me-2" @bind="tituloEpicaSeleccionada">
+        <option value="">Seleccione una épica</option>
+        @foreach (var epica in epicas)
+        {
+        <option value="@epica.Titulo">@epica.Titulo</option>
+        }
+    </select>
+    <button class="btn btn-primary" @onclick="CargarEpica">Cargar Épica</button>
+</div>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+<div class="alert alert-danger">
+    <p>@errorMessage</p>
+</div>
+}
+@if (!string.IsNullOrEmpty(successMessage))
+{
+<div class="alert alert-success">
+    <p>@successMessage</p>
+</div>
+}
+
+@if (epicaSeleccionada == true)
+{
+    <div class="mb-3 d-flex align-items-center">
+        <label for="tareaSelect" class="me-2">Seleccionar Tarea:</label>
+        <select id="tareaSelect" class="form-control me-2" @bind="tituloTareaSeleccionada">
+            <option value="">Seleccione una tarea</option>
+            @foreach (var tarea in tareas)
+            {
+                <option value="@tarea.Titulo">@tarea.Titulo</option>
+            }
+        </select>
+        <button class="btn btn-primary" @onclick="CargarTarea">Cargar Tarea</button>
+    </div>
+}
+@if (tareaSeleccionada != null)
+{
+    <div class="mb-3">
+        <label for="titulo">Titulo:</label>
+        @if (editandoTitulo)
+        {
+            <input id="titulo" type="text" class="form-control" maxlength="50" @bind="nuevoTitulo" />
+            <button class="btn btn-success" @onclick="GuardarTitulo">Guardar</button>
+        }
+        else
+        {
+            <p>@tareaSeleccionada.Titulo</p>
+            <button class="btn btn-primary" @onclick="EditarTitulo">Modificar Titulo</button>
+        }
+    </div>
+    <div class="mb-3">
+        <label for="descripcion">Descripcion:</label>
+        @if (editandoDescripcion)
+        {
+            <input id="descripcion" type="text" class="form-control" maxlength="50" @bind="nuevaDescripcion" />
+            <button class="btn btn-success" @onclick="GuardarDescripcion">Guardar</button>
+        }
+        else
+        {
+            <p>@tareaSeleccionada.Descripcion</p>
+            <button class="btn btn-primary" @onclick="EditarDescripcion">Modificar Descripcion</button>
+        }
+    </div>
+    
+    <div class="mb-3">
+        <label>Esfuerzo estimado:</label>
+        <p>@tareaSeleccionada.EsfuerzoEstimado</p>
+    </div>
+    
+    <div class="mb-3">
+        <label for="esfuerzoInvertido">Esfuerzo invertido:</label>
+        @if (editandoEsfuerzoInvertido)
+        {
+            <input id="esfuerzoInvertido" type="number" class="form-control" @bind="nuevoEsfuerzoInvertido" />
+            <button class="btn btn-success" @onclick="GuardarEsfuerzoInvertido">Guardar</button>
+        }
+        else
+        {
+            <p>@tareaSeleccionada.EsfuerzoInvertido</p>
+            <button class="btn btn-primary" @onclick="EditarEsfuerzoInvertido">Modificar Esfuerzo Invertido</button>
+        }
+    </div>
+    
+    
+    <div class="mb-3">
+        <label>Fecha de expiración:</label>
+        <p>@tareaSeleccionada.FechaExpiracion</p>
+    </div>
+    <div class="mb-3">
+        <label>Prioridad:</label>
+        <p>@tareaSeleccionada.Prioridad</p>
+    </div>
+    <div class="mb-3">
+        <button class="btn btn-danger" @onclick="EliminarTareaSeleccionada">Eliminar tarea</button>
+    </div>
+    <hr/>
+    
+    <div class="mb-3">
+        <label>Comentarios:</label>
+        <ul>
+        @foreach (var comentario in tareaLogic.ObtenerComentariosDeTarea(nombreEquipoSeleccionado, nombrePanelSeleccionado, tituloTareaSeleccionada))
+        {
+            <li>Titulo: @comentario.Titulo</li>
+            <li>Descripcion: @comentario.Descripcion</li>
+            <li>Usuario que lo creó: @comentario.UsuarioCreador.Email </li>
+            @if (comentario.Estado == false)
+            {
+                <li>Estado: No resuelto</li>
+                <button class="btn btn-primary" @onclick="() => ResolverComentario(comentario)">Resolver</button>
+            }
+            else
+            {
+                <li>Estado: Resuelto</li>
+                <li>Usuario que lo resolvió: @comentario.UsuarioResolvedor.Nombre  @comentario.UsuarioResolvedor.Apellido</li>
+                <li>Fecha de resolución: @comentario.FechaResolucion</li>
+            }
+            <hr/>
+        }
+        </ul>
+    </div>
+
+    <div class="mb-3">
+        <label>Agregar Comentario:</label>
+        <form @onsubmit="CrearComentario">
+            <div class="mb-3">
+                <label for="titulo">Titulo:</label>
+                <input id="titulo" type="text" class="form-control" maxlength="50" @bind="comentario.Titulo" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="descripcion">Descripcion:</label>
+                <input id="descripcion" type="text" class="form-control" maxlength="50" @bind="comentario.Descripcion" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Agregar</button>
+        </form>
+    </div>
+}
+
+@code {
+    private List<Equipo> equipos = new List<Equipo>();
+    private string? nombreEquipoSeleccionado, nombrePanelSeleccionado, tituloTareaSeleccionada, errorMessage, nuevoTitulo, successMessage, nuevaDescripcion, tituloEpicaSeleccionada;
+    private int nuevoEsfuerzoInvertido;
+    private Equipo? equipoSeleccionado;
+    private List<Panel> paneles = new List<Panel>();
+    private Panel? panelSeleccionado;
+    private List<Tarea> tareas = new List<Tarea>();
+    private Tarea? tareaSeleccionada;
+    private bool editandoTitulo = false;
+    private bool editandoDescripcion = false;
+    private bool editandoEsfuerzoInvertido = false;
+    private Comentario comentario = new Comentario();
+    private bool firstRender = true;
+    private bool epicaSeleccionada = false;
+    private List<Epica> epicas = new List<Epica>();
+    
+    protected override void OnInitialized()
+    {
+        if(sesionLogic.UsuarioLogueado != null)
+        {
+            equipos = equipoLogic.ListarEquipos(sesionLogic.UsuarioLogueado);
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        {
+            if (sesionLogic.UsuarioLogueado == null)
+            {
+                Navigation.NavigateTo("https://localhost:7014/", true);
+            }
+            firstRender = false;
+        }
+    }
+    
+    private void CargarEquipo()
+    {
+        if (!string.IsNullOrEmpty(nombreEquipoSeleccionado))
+        {
+            equipoSeleccionado = equipos.FirstOrDefault(e => e.Nombre == nombreEquipoSeleccionado);
+            paneles = equipoLogic.ListarPaneles(equipoSeleccionado.Nombre);
+        }
+    }
+    private void CargarPanel()
+    {
+        if (!string.IsNullOrEmpty(nombrePanelSeleccionado))
+        {
+            panelSeleccionado = paneles.FirstOrDefault(p => p.Nombre == nombrePanelSeleccionado);
+            epicas = panelLogic.ListarEpicas(panelSeleccionado.Nombre, panelSeleccionado.EquipoAlQuePertenece);
+            epicas.Add(new Epica("Sin Epica",(Prioridad.Baja),"desc",new DateTime(2030,12,12)));
+        }
+    }
+    private void CargarTarea()
+    {
+        if (!string.IsNullOrEmpty(tituloTareaSeleccionada))
+        {
+            tareaSeleccionada = tareas.FirstOrDefault(t => t.Titulo == tituloTareaSeleccionada);
+        }
+    }
+    private void EditarTitulo() => editandoTitulo = true;
+
+    private void GuardarTitulo()
+    {
+        
+        try
+        {
+            if (tareaSeleccionada == null)
+            {
+                errorMessage = "No se ha seleccionado un usuario.";
+                return;
+            }
+
+            if (string.IsNullOrEmpty(nuevoTitulo))
+            {
+                errorMessage = "El nuevo titulo no puede estar vacío.";
+                return;
+            }
+            tareaLogic.ModificarTitulo(tareaSeleccionada.Titulo, nuevoTitulo);
+            tituloTareaSeleccionada = nuevoTitulo;
+            editandoTitulo = false;
+            errorMessage = null;
+            successMessage = "Titulo modificado con exito";
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+            successMessage = null;
+        }
+    }
+    private void EditarDescripcion() => editandoDescripcion = true;
+
+    private void GuardarDescripcion()
+    {
+        try
+        {
+            if (tareaSeleccionada == null)
+            {
+                errorMessage = "No se ha seleccionado un usuario.";
+                return;
+            }
+
+            if (string.IsNullOrEmpty(nuevaDescripcion))
+            {
+                errorMessage = "La nueva descripcion no puede estar vacía.";
+                return;
+            }
+            tareaLogic.ModificarDescripcion(tareaSeleccionada.Titulo, nuevaDescripcion);
+            tareaSeleccionada.Descripcion = nuevaDescripcion;
+            editandoDescripcion = false;
+            errorMessage = null;
+            successMessage = "Descripcion modificada con exito";
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+            successMessage = null;
+        }
+    }
+    
+    private void EditarEsfuerzoInvertido() => editandoEsfuerzoInvertido = true;
+    
+    private void GuardarEsfuerzoInvertido()
+    {
+        try
+        {
+            if (tareaSeleccionada == null)
+            {
+                errorMessage = "No se ha seleccionado una tarea.";
+                return;
+            }
+
+            if (nuevoEsfuerzoInvertido < 0)
+            {
+                errorMessage = "El esfuerzo invertido no puede ser negativo.";
+                return;
+            }
+            tareaLogic.ModificarEsfuerzoInvertido(tareaSeleccionada.Titulo, nuevoEsfuerzoInvertido);
+            tareaSeleccionada.EsfuerzoInvertido = nuevoEsfuerzoInvertido;
+            editandoEsfuerzoInvertido = false;
+            errorMessage = null;
+            successMessage = "Esfuerzo invertido modificado con éxito";
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+            successMessage = null;
+        }
+    }
+    
+    private void CrearComentario()
+    {
+        try
+        {
+            tareaLogic.AgregarComentario(nombreEquipoSeleccionado, panelSeleccionado.Nombre, tareaSeleccionada.Titulo, comentario.Titulo, comentario.Descripcion, sesionLogic.UsuarioLogueado);
+            errorMessage = null;
+            successMessage = "Comentario agregado con exito";
+            comentario = new Comentario();
+            
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+            successMessage = null;
+        }
+    }
+
+    private async Task ResolverComentario(Comentario comentario)
+    {
+        UsuarioDTO UsuarioLogueadoDto = new UsuarioDTO(sesionLogic.UsuarioLogueado.EsAdmin, sesionLogic.UsuarioLogueado.Nombre, sesionLogic.UsuarioLogueado.Apellido,
+            sesionLogic.UsuarioLogueado.Email, sesionLogic.UsuarioLogueado.FechaNacimiento, sesionLogic.UsuarioLogueado.Contrasena);
+        
+        AgregarComentarioDTO agregarComentarioDto = new AgregarComentarioDTO(panelSeleccionado.Nombre, tareaSeleccionada.Titulo, comentario.Titulo, UsuarioLogueadoDto, equipoSeleccionado.Nombre);
+        comentarioLogic.ResolverComentario(agregarComentarioDto);
+    }
+
+    private async Task EliminarTareaSeleccionada()
+    {
+        try
+        {
+            panelLogic.EliminarTarea(nombreEquipoSeleccionado, panelSeleccionado.Nombre, tareaSeleccionada.Titulo, sesionLogic.UsuarioLogueado);
+            tareas.Remove(tareaSeleccionada);
+            errorMessage = null;
+            successMessage = "Tarea enviada a la papelera con éxito";
+            tareaSeleccionada = null;
+            editandoDescripcion = false;
+            editandoTitulo = false;
+        }catch(Exception e)
+        {
+            errorMessage = e.Message;
+            if (errorMessage.Equals("La papelera está llena."))
+            {
+                await MostrarConfirmacionPapeleraLlena();
+            }
+        }
+    }
+    
+    private async Task MostrarConfirmacionPapeleraLlena()
+    {
+        bool? resultado = await JSRuntime.InvokeAsync<bool?>("confirm", "La papelera está llena. El elemento se eliminará de forma permanente. Desea continuar?");
+        if (resultado == true)
+        {
+            try
+            {
+                panelLogic.EliminarTareaDeFormaPermanente(nombreEquipoSeleccionado, panelSeleccionado.Nombre, tareaSeleccionada.Titulo, sesionLogic.UsuarioLogueado);
+                tareas.Remove(tareaSeleccionada);
+                panelSeleccionado = null;
+                errorMessage = null;
+                tareaSeleccionada = null;
+                successMessage = "Tarea eliminado con éxito";
+            }
+            catch (Exception ex)
+            {
+                successMessage = null;
+                errorMessage = ex.Message;
+            }
+        }
+    }
+    private void CargarEpica()
+    {
+        if (!string.IsNullOrEmpty(tituloEpicaSeleccionada))
+        {
+            epicaSeleccionada = true;
+        }
+        if(tituloEpicaSeleccionada == "Sin Epica")
+        {
+            tareas = panelLogic.ListarTareasSinEpicaAsociada(panelSeleccionado.Nombre, panelSeleccionado.EquipoAlQuePertenece);
+        }
+        else
+        {
+            tareas = panelLogic.ListarTareasPorEpica(panelSeleccionado.Nombre, panelSeleccionado.EquipoAlQuePertenece, tituloEpicaSeleccionada);
+        }
+    }
+}

@@ -1,0 +1,91 @@
+@page "/gestionUsuarios"
+@using BusinessLogic
+@using BusinessLogic.Interfaces
+@using Domain
+@inject SesionLogic sesionLogic
+@inject IUsuarioLogic usuarioLogic
+@inject NavigationManager NavigationManager
+
+<h3>Gestión de usuarios</h3>
+<p>
+    @if (sesionLogic.UsuarioLogueado != null && sesionLogic.UsuarioLogueado.EsAdmin)
+    {
+        <button @onclick="AgregarUsuario" class="btn btn-primary">Agregar usuario</button>
+        <a>   </a>
+        <button @onclick="EliminarUsuario" class="btn btn-primary">Eliminar usuario</button>
+        <a>   </a>
+    }
+    <button @onclick="ModificarUsuario" class="btn btn-primary">Modificar usuario</button>
+</p>
+
+<h5>Lista de usuarios:</h5>
+
+@if (_usuarios.Count > 0)
+{
+    <ul>
+        @foreach (var usuario in _usuarios)
+        {
+            <li>@usuario.Email  -  @usuario.NombreCompleto</li>
+        }
+    </ul>
+}
+else
+{
+    <p>No hay usuarios para mostrar</p>
+}
+
+@code {
+    private List<Usuario> _usuarios = new List<Usuario>();
+    private bool firstRender = true;
+
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            if (sesionLogic.UsuarioLogueado != null)
+            {
+                if (sesionLogic.UsuarioLogueado.EsAdmin)
+            {
+                _usuarios = usuarioLogic.ListarUsuarios(sesionLogic.UsuarioLogueado);    
+            }
+            else
+            {
+                _usuarios.Add(sesionLogic.UsuarioLogueado);
+            }
+            }
+            
+        }
+        catch (Exception e)
+        {
+            _usuarios = null;
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        {
+            if (sesionLogic.UsuarioLogueado == null)
+            {
+                NavigationManager.NavigateTo("https://localhost:7014/", true);
+            }
+            firstRender = false;
+        }
+    }
+    
+    private void AgregarUsuario()
+    {
+        NavigationManager.NavigateTo("/AgregarUsuario");
+    }
+    
+    private void EliminarUsuario()
+    {
+        NavigationManager.NavigateTo("/EliminarUsuario");
+    }
+    
+    private void ModificarUsuario()
+    {
+        NavigationManager.NavigateTo("/ModificarUsuario");
+    }
+}

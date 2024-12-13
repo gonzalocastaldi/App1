@@ -1,0 +1,65 @@
+﻿@inject NavigationManager NavigationManager
+@page "/GestionEpicas"
+@using Domain
+@using BusinessLogic
+@using BusinessLogic.Interfaces
+@inject IEquipoLogic equipoLogic
+@inject IPanelLogic panelLogic
+@inject SesionLogic sesionLogic
+
+
+<h3>Gestión de épicas</h3>
+
+<p>
+    <button @onclick="CrearEpica" class="btn btn-primary">Crear épica</button>
+    <a>   </a>
+    <button @onclick="EliminarEpica" class="btn btn-primary">Eliminar épica</button>
+    <a>   </a>
+    <button @onclick="ModificarEpica" class="btn btn-primary">Modificar épica</button>
+</p>
+
+<p>
+    <h4>Lista épicas</h4>
+    @foreach (var epica in epicas)
+    {
+        var panel = paneles.FirstOrDefault(p => p.Epicas.Contains(epica));
+        if (panel != null)
+        {
+            <div>@panel.EquipoAlQuePertenece - @panel.Nombre - @epica.Titulo</div>
+        }
+    }
+</p>
+
+@code {
+    private List<Equipo> equipos = new List<Equipo>();
+    private List<Panel> paneles = new List<Panel>();
+    private List<Epica> epicas = new List<Epica>();
+    private List<Epica> epicasPorPanel = new List<Epica>();
+    
+    protected override void OnInitialized()
+    {
+        if(sesionLogic.UsuarioLogueado != null)
+        {
+            equipos = equipoLogic.ListarEquipos(sesionLogic.UsuarioLogueado);
+            paneles = equipos.SelectMany(e => equipoLogic.ListarPaneles(e.Nombre)).ToList();
+            foreach (var panel in paneles)
+            {
+                epicasPorPanel = panelLogic.ListarEpicas(panel.Nombre, panel.EquipoAlQuePertenece);
+                epicas.AddRange(epicasPorPanel);
+            }
+        }
+    }
+
+    private void CrearEpica()
+    {
+        NavigationManager.NavigateTo("CrearEpica");
+    }
+    private void EliminarEpica()
+    {
+        NavigationManager.NavigateTo("EliminarEpica");
+    }
+    private void ModificarEpica()
+    {
+        NavigationManager.NavigateTo("ModificarEpica");
+    }
+}

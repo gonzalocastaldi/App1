@@ -1,11 +1,10 @@
 ﻿@inject NavigationManager NavigationManager
 @page "/GestionEpicas"
 @using Domain
-@using BusinessLogic
 @using BusinessLogic.Interfaces
-@inject IEquipoLogic equipoLogic
-@inject IPanelLogic panelLogic
-@inject SesionLogic sesionLogic
+@inject IEquipoLogic EquipoLogic
+@inject IPanelLogic PanelLogic
+@inject SesionLogic SesionLogic
 
 
 <h3>Gestión de épicas</h3>
@@ -20,9 +19,9 @@
 
 <p>
     <h4>Lista épicas</h4>
-    @foreach (var epica in epicas)
+    @foreach (var epica in _epicas)
     {
-        var panel = paneles.FirstOrDefault(p => p.Epicas.Contains(epica));
+        var panel = _paneles.FirstOrDefault(p => p.Epicas.Contains(epica));
         if (panel != null)
         {
             <div>@panel.EquipoAlQuePertenece - @panel.Nombre - @epica.Titulo</div>
@@ -31,21 +30,21 @@
 </p>
 
 @code {
-    private List<Equipo> equipos = new List<Equipo>();
-    private List<Panel> paneles = new List<Panel>();
-    private List<Epica> epicas = new List<Epica>();
-    private List<Epica> epicasPorPanel = new List<Epica>();
+    private List<Equipo> _equipos = new List<Equipo>();
+    private List<Panel> _paneles = new List<Panel>();
+    private readonly List<Epica> _epicas = new List<Epica>();
+    private List<Epica> _epicasPorPanel = new List<Epica>();
     
     protected override void OnInitialized()
     {
-        if(sesionLogic.UsuarioLogueado != null)
+        if(SesionLogic.UsuarioLogueado != null)
         {
-            equipos = equipoLogic.ListarEquipos(sesionLogic.UsuarioLogueado);
-            paneles = equipos.SelectMany(e => equipoLogic.ListarPaneles(e.Nombre)).ToList();
-            foreach (var panel in paneles)
+            _equipos = EquipoLogic.ListarEquipos(SesionLogic.UsuarioLogueado);
+            _paneles = _equipos.SelectMany(e => EquipoLogic.ListarPaneles(e.Nombre)).ToList();
+            foreach (var panel in _paneles)
             {
-                epicasPorPanel = panelLogic.ListarEpicas(panel.Nombre, panel.EquipoAlQuePertenece);
-                epicas.AddRange(epicasPorPanel);
+                _epicasPorPanel = PanelLogic.ListarEpicas(panel.Nombre, panel.EquipoAlQuePertenece);
+                _epicas.AddRange(_epicasPorPanel);
             }
         }
     }

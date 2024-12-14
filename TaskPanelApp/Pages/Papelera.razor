@@ -1,12 +1,11 @@
 @page "/papelera"
-@using BusinessLogic
 @using BusinessLogic.Interfaces
 @using Domain
-@inject SesionLogic sesionLogic
-@inject IPapeleraLogic papeleraLogic
+@inject SesionLogic SesionLogic
+@inject IPapeleraLogic PapeleraLogic
 @inject NavigationManager Navigation
-@inject IUsuarioLogic usuarioLogic
-@inject IJSRuntime JSRuntime
+@inject IUsuarioLogic UsuarioLogic
+@inject IJSRuntime JsRuntime
 
 <h3>Papelera</h3>
 
@@ -27,45 +26,44 @@
     }
 </ul>
 
-@if (!string.IsNullOrEmpty(errorMessage))
+@if (!string.IsNullOrEmpty(_errorMessage))
 {
 <div class="alert alert-danger">
-    <p>@errorMessage</p>
+    <p>@_errorMessage</p>
 </div>
 }
-@if (!string.IsNullOrEmpty(successMessage))
+@if (!string.IsNullOrEmpty(_successMessage))
 {
 <div class="alert alert-success">
-    <p>@successMessage</p>
+    <p>@_successMessage</p>
 </div>
 }
 
 @code {
-    private Usuario _UsuarioLogueado;
+    private Usuario _usuarioLogueado;
     private List<Panel>? _paneles = new List<Panel>();
     private List<Tarea>? _tareas = new List<Tarea>();
-    private string errorMessage;
-    private string successMessage;
-    Panel panelSeleccionado;
-    private bool firstRender = true;
-    private Domain.Papelera? papelera;
+    private string? _errorMessage;
+    private string? _successMessage;
+    private bool _firstRender = true;
+    private Domain.Papelera? _papelera;
 
     protected override void OnInitialized()
     {
-        if(sesionLogic.UsuarioLogueado != null)
+        if(SesionLogic.UsuarioLogueado != null)
         {
-            papelera = usuarioLogic.ObtenerPapeleraDeUsuario(sesionLogic.UsuarioLogueado);
-            _UsuarioLogueado = sesionLogic.UsuarioLogueado;
-            _paneles = papelera.Paneles;
-            _tareas = papelera.Tareas;
+            _papelera = UsuarioLogic.ObtenerPapeleraDeUsuario(SesionLogic.UsuarioLogueado);
+            _usuarioLogueado = SesionLogic.UsuarioLogueado;
+            _paneles = _papelera.Paneles;
+            _tareas = _papelera.Tareas;
         }
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender && _UsuarioLogueado == null)
+        if (firstRender && _usuarioLogueado == null)
         {
-            if (_UsuarioLogueado == null)
+            if (_usuarioLogueado == null)
             {
                 Navigation.NavigateTo("https://localhost:7014/", true);
             }
@@ -79,12 +77,12 @@
         {
             try
             {
-                papeleraLogic.EliminarPanelDePapelera(panel, _UsuarioLogueado.Papelera);
-                successMessage = "Panel eliminado con éxito";
+                PapeleraLogic.EliminarPanelDePapelera(panel, _usuarioLogueado.Papelera);
+                _successMessage = "Panel eliminado con éxito";
             }
             catch (Exception e)
             {
-                errorMessage = e.Message;
+                _errorMessage = e.Message;
             }
         });
     }
@@ -95,19 +93,19 @@
         {
             try
             {
-                papeleraLogic.EliminarTareaDePapelera(tarea, _UsuarioLogueado.Papelera);
-                successMessage = "Tarea eliminada con éxito";
+                PapeleraLogic.EliminarTareaDePapelera(tarea, _usuarioLogueado.Papelera);
+                _successMessage = "Tarea eliminada con éxito";
             }
             catch (Exception e)
             {
-                errorMessage = e.Message;
+                _errorMessage = e.Message;
             }
         });
     }
     
     private async Task ConfirmarAccionIrreversible(Func<Task> accion)
     {
-        bool confirmar = await JSRuntime.InvokeAsync<bool>("confirm", "Esta acción es permanente y no puede deshacerse. Desea continuar de todas formas?");
+        bool confirmar = await JsRuntime.InvokeAsync<bool>("confirm", "Esta acción es permanente y no puede deshacerse. Desea continuar de todas formas?");
         if (confirmar)
         {
             await accion();
@@ -118,12 +116,12 @@
     {
         try
         {
-            papeleraLogic.RestaurarPanel(panel, _UsuarioLogueado.Papelera, _UsuarioLogueado);
-            successMessage = "Panel restaurado con éxito";
+            PapeleraLogic.RestaurarPanel(panel, _usuarioLogueado.Papelera, _usuarioLogueado);
+            _successMessage = "Panel restaurado con éxito";
         }
         catch (Exception e)
         {
-            errorMessage = e.Message;
+            _errorMessage = e.Message;
         }
     }
     
@@ -132,12 +130,12 @@
         try
         {
             
-            papeleraLogic.RestaurarTarea(tarea, _UsuarioLogueado.Papelera, _UsuarioLogueado);
-            successMessage = "Tarea restaurada con éxito";
+            PapeleraLogic.RestaurarTarea(tarea, _usuarioLogueado.Papelera, _usuarioLogueado);
+            _successMessage = "Tarea restaurada con éxito";
         }
         catch (Exception e)
         {
-            errorMessage = e.Message;
+            _errorMessage = e.Message;
         }
     }
 }

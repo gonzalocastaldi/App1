@@ -1,14 +1,13 @@
 @page "/crearNuevoEquipo"
-@using BusinessLogic
 @using BusinessLogic.Interfaces
 @using Domain
-@inject IEquipoLogic equipoLogic
+@inject IEquipoLogic EquipoLogic
 @inject NavigationManager NavigationManager
-@inject SesionLogic sesionLogic
+@inject SesionLogic SesionLogic
 @inject NavigationManager Navigation
 
 
-@if (sesionLogic.UsuarioLogueado != null && sesionLogic.UsuarioLogueado.EsAdmin)
+@if (SesionLogic.UsuarioLogueado.EsAdmin)
 {
     <h3>Crear nuevo equipo</h3>
 
@@ -47,15 +46,14 @@ else
 @code {
     private Equipo _equipo = new Equipo();
     private string? _errorDeValidacion;
-    private Usuario _UsuarioLogueado;
-    private bool firstRender = true;
+    private Usuario? _usuarioLogueado;
 
 
     protected override void OnInitialized()
     {
         try
         {
-            _UsuarioLogueado = sesionLogic.UsuarioLogueado;
+            _usuarioLogueado = SesionLogic.UsuarioLogueado;
         }
         catch (Exception ex)
         {
@@ -65,9 +63,9 @@ else
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        if (firstRender && SesionLogic.UsuarioLogueado == null)
         {
-            if (sesionLogic.UsuarioLogueado == null)
+            if (SesionLogic.UsuarioLogueado == null)
             {
                 Navigation.NavigateTo("https://localhost:7014/", true);
             }
@@ -77,8 +75,8 @@ else
     
     private void CrearEquipo()
     {
-        _equipo = new Equipo(_equipo.Nombre, _equipo.CantidadMaxima, _equipo.Descripcion, _UsuarioLogueado);
-        _errorDeValidacion = equipoLogic.ValidarYGuardarEquipo(_equipo, _UsuarioLogueado);
+        _equipo = new Equipo(_equipo.Nombre, _equipo.CantidadMaxima, _equipo.Descripcion, _usuarioLogueado);
+        _errorDeValidacion = EquipoLogic.ValidarYGuardarEquipo(_equipo, _usuarioLogueado);
         if (_errorDeValidacion == null)
         {
             LimpiarFormulario();

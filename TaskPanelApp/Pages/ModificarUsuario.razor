@@ -1,9 +1,8 @@
 ﻿@page "/ModificarUsuario"
-@using BusinessLogic
 @using BusinessLogic.Interfaces
 @using Domain
-@inject IUsuarioLogic usuarioLogic
-@inject SesionLogic sesionLogic
+@inject IUsuarioLogic UsuarioLogic
+@inject SesionLogic SesionLogic
 @inject NavigationManager Navigation
 
 
@@ -11,9 +10,9 @@
 
 <div class="mb-3">
     <label for="equipoSelect">Seleccionar Usuario:</label>
-    <select id="equipoSelect" class="form-control" @bind="emailSeleccionado">
+    <select id="equipoSelect" class="form-control" @bind="_emailSeleccionado">
         <option value="">Seleccione un usuario</option>
-        @foreach (var usuario in usuarios)
+        @foreach (var usuario in _usuarios)
         {
             <option value="@usuario.Email">@usuario.Email</option>
         }
@@ -22,32 +21,32 @@
 
 <button class="btn btn-primary" @onclick="CargarUsuario">Cargar Usuario</button>
 
-@if (!string.IsNullOrEmpty(errorMessage))
+@if (!string.IsNullOrEmpty(_errorMessage))
 {
 <div class="alert alert-danger">
-    <p>@errorMessage</p>
+    <p>@_errorMessage</p>
 </div>
 }
 
-@if (!string.IsNullOrEmpty(successMessage))
+@if (!string.IsNullOrEmpty(_successMessage))
 {
 <div class="alert alert-success">
-    <p>@successMessage</p>
+    <p>@_successMessage</p>
 </div>
 }
 
-@if (usuarioSeleccionado != null)
+@if (_usuarioSeleccionado != null)
 {
     <div class="mb-3">
         <label for="email">Email:</label>
-        @if (editandoEmail)
+        @if (_editandoEmail)
         {
-            <input id="email" type="text" class="form-control" maxlength="50" @bind="nuevoEmail" required />
+            <input id="email" type="text" class="form-control" maxlength="50" @bind="_nuevoEmail" required />
             <button class="btn btn-success" @onclick="GuardarEmail">Guardar</button>
         }
         else
         {
-            <p>@usuarioSeleccionado.Email</p>
+            <p>@_usuarioSeleccionado.Email</p>
             <button class="btn btn-primary" @onclick="EditarEmail">Modificar Email</button>
         }
     </div>
@@ -55,28 +54,28 @@
 
     <div class="mb-3">
         <label for="nombre">Nombre:</label>
-        @if (editandoNombre)
+        @if (_editandoNombre)
         {
-            <input id="nombre" type="text" class="form-control" maxlength="50" @bind="nuevoNombre" required />
+            <input id="nombre" type="text" class="form-control" maxlength="50" @bind="_nuevoNombre" required />
             <button class="btn btn-success" @onclick="GuardarNombre">Guardar</button>
         }
         else
         {
-            <p>@usuarioSeleccionado.Nombre</p>
+            <p>@_usuarioSeleccionado.Nombre</p>
             <button class="btn btn-primary" @onclick="EditarNombre">Modificar Nombre</button>
         }
     </div>
 
     <div class="mb-3">
         <label for="apellido">Apellido:</label>
-        @if (editandoApellido)
+        @if (_editandoApellido)
         {
-            <input id="apellido" type="text" class="form-control" maxlength="50" @bind="nuevoApellido" required />
+            <input id="apellido" type="text" class="form-control" maxlength="50" @bind="_nuevoApellido" required />
             <button class="btn btn-success" @onclick="GuardarApellido">Guardar</button>
         }
         else
         {
-            <p>@usuarioSeleccionado.Apellido</p>
+            <p>@_usuarioSeleccionado.Apellido</p>
             <button class="btn btn-primary" @onclick="EditarApellido">Modificar Apellido</button>
         }
     </div>
@@ -87,22 +86,22 @@
             <button class="btn btn-primary" @onclick="EditarContrasena">Reiniciar Contraseña</button>
     </div>
     
-    @if (!string.IsNullOrEmpty(nuevaContrasena))
+    @if (!string.IsNullOrEmpty(_nuevaContrasena))
     {
         <div class="mb-3">
             <label for="nuevaContrasena">Nueva Contraseña:</label>
-            <p>@nuevaContrasena</p>
+            <p>@_nuevaContrasena</p>
         </div>
     }
     
     <div class="mb-3">
         <label for="fechaNacimiento">Fecha de Nacimiento:</label>
-        <p>@usuarioSeleccionado.FechaNacimiento.ToString("dd/MM/yyyy")</p>
+        <p>@_usuarioSeleccionado.FechaNacimiento.ToString("dd/MM/yyyy")</p>
     </div>
 
     <div class="mb-3">
         <label for="esAdmin">Es Admin:</label>
-        @if(usuarioSeleccionado.EsAdmin)
+        @if(_usuarioSeleccionado.EsAdmin)
         {
             <p>Si</p>
         }
@@ -114,23 +113,22 @@
 }
 
 @code {
-    private List<Usuario> usuarios = new List<Usuario>();
-    private Usuario? usuarioSeleccionado;
-    private string? emailSeleccionado, nuevoEmail, nuevoNombre, nuevoApellido, nuevaContrasena, errorMessage, successMessage;
-    private bool editandoEmail, editandoNombre, editandoApellido, editandoContrasena, editandoEsAdmin;
-    private bool firstRender = true;
+    private List<Usuario> _usuarios = new List<Usuario>();
+    private Usuario? _usuarioSeleccionado;
+    private string? _emailSeleccionado, _nuevoEmail, _nuevoNombre, _nuevoApellido, _nuevaContrasena, _errorMessage, _successMessage;
+    private bool _editandoEmail, _editandoNombre, _editandoApellido;
 
 
     protected override void OnInitialized()
     {
-        if(sesionLogic.UsuarioLogueado != null){
-           if (sesionLogic.UsuarioLogueado.EsAdmin)
+        if(SesionLogic.UsuarioLogueado != null){
+           if (SesionLogic.UsuarioLogueado.EsAdmin)
            {
-               usuarios = usuarioLogic.ListarUsuarios(sesionLogic.UsuarioLogueado);
+               _usuarios = UsuarioLogic.ListarUsuarios(SesionLogic.UsuarioLogueado);
            }
            else
            {
-               usuarios.Add(sesionLogic.UsuarioLogueado);
+               _usuarios.Add(SesionLogic.UsuarioLogueado);
            } 
         }
     
@@ -138,9 +136,9 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        if (firstRender && SesionLogic.UsuarioLogueado == null)
         {
-            if (sesionLogic.UsuarioLogueado == null)
+            if (SesionLogic.UsuarioLogueado == null)
             {
                 Navigation.NavigateTo("https://localhost:7014/", true);
             }
@@ -150,92 +148,92 @@
 
     private void CargarUsuario()
     {
-        errorMessage = null;
-        successMessage = null;
-        if (!string.IsNullOrEmpty(emailSeleccionado))
+        _errorMessage = null;
+        _successMessage = null;
+        if (!string.IsNullOrEmpty(_emailSeleccionado))
         {
-            usuarioSeleccionado = usuarios.FirstOrDefault(u => u.Email == emailSeleccionado);
+            _usuarioSeleccionado = _usuarios.FirstOrDefault(u => u.Email == _emailSeleccionado);
         }
     }
 
-    private void EditarEmail() => editandoEmail = true;
+    private void EditarEmail() => _editandoEmail = true;
     private void GuardarEmail()
     {
         try
         {
-            errorMessage = null;
-            successMessage = null;
-            if (usuarioSeleccionado == null)
+            _errorMessage = null;
+            _successMessage = null;
+            if (_usuarioSeleccionado == null)
             {
-                errorMessage = "No se ha seleccionado un usuario.";
+                _errorMessage = "No se ha seleccionado un usuario.";
                 return;
             }
 
-            if (string.IsNullOrEmpty(nuevoEmail))
+            if (string.IsNullOrEmpty(_nuevoEmail))
             {
-                errorMessage = "El nuevo email no puede estar vacío.";
+                _errorMessage = "El nuevo email no puede estar vacío.";
                 return;
             }
 
-            if (sesionLogic.UsuarioLogueado == null)
+            if (SesionLogic.UsuarioLogueado == null)
             {
-                errorMessage = "El usuario logueado no está disponible.";
+                _errorMessage = "El usuario logueado no está disponible.";
                 return;
             }
             
-            usuarioLogic.ModificarEmail(usuarioSeleccionado, sesionLogic.UsuarioLogueado, nuevoEmail);
-            emailSeleccionado = nuevoEmail;
-            editandoEmail = false;
-            successMessage = "Email modificado correctamente.";
+            UsuarioLogic.ModificarEmail(_usuarioSeleccionado, SesionLogic.UsuarioLogueado, _nuevoEmail);
+            _emailSeleccionado = _nuevoEmail;
+            _editandoEmail = false;
+            _successMessage = "Email modificado correctamente.";
         }
         catch (Exception e)
         {
-            errorMessage = e.Message;
+            _errorMessage = e.Message;
         }
     }
 
-    private void EditarNombre() => editandoNombre = true;
+    private void EditarNombre() => _editandoNombre = true;
     private void GuardarNombre()
     {
-        errorMessage = null;
-        successMessage = null;
-        if(string.IsNullOrEmpty(nuevoNombre))
+        _errorMessage = null;
+        _successMessage = null;
+        if(string.IsNullOrEmpty(_nuevoNombre))
         {
-            errorMessage = "El nuevo nombre no puede estar vacío.";
-            editandoNombre = false;
+            _errorMessage = "El nuevo nombre no puede estar vacío.";
+            _editandoNombre = false;
             return;
         }
-        usuarioLogic.ModificarNombre(sesionLogic.UsuarioLogueado, usuarioSeleccionado, nuevoNombre);
-        editandoNombre = false;
-        successMessage = "Nombre modificado correctamente.";
+        UsuarioLogic.ModificarNombre(SesionLogic.UsuarioLogueado, _usuarioSeleccionado, _nuevoNombre);
+        _editandoNombre = false;
+        _successMessage = "Nombre modificado correctamente.";
     }
 
-    private void EditarApellido() => editandoApellido = true;
+    private void EditarApellido() => _editandoApellido = true;
     private void GuardarApellido()
     {
-        errorMessage = null;
-        successMessage = null;
-        if(string.IsNullOrEmpty(nuevoApellido))
+        _errorMessage = null;
+        _successMessage = null;
+        if(string.IsNullOrEmpty(_nuevoApellido))
         {
-            errorMessage = "El nuevo apellido no puede estar vacío.";
-            editandoApellido = false;
+            _errorMessage = "El nuevo apellido no puede estar vacío.";
+            _editandoApellido = false;
             return;
         }
-        usuarioLogic.ModificarApellido(sesionLogic.UsuarioLogueado, usuarioSeleccionado, nuevoApellido);
-        editandoApellido = false;
-        successMessage = "Apellido modificado correctamente.";
+        UsuarioLogic.ModificarApellido(SesionLogic.UsuarioLogueado, _usuarioSeleccionado, _nuevoApellido);
+        _editandoApellido = false;
+        _successMessage = "Apellido modificado correctamente.";
     }
 
     private void EditarContrasena()
     { 
         try
         {
-            usuarioLogic.ReiniciarContraseña(sesionLogic.UsuarioLogueado, usuarioSeleccionado);
-            successMessage = "Contraseña modificada correctamente. La nueva contraseña es: " + usuarioSeleccionado.Contrasena;
+            UsuarioLogic.ReiniciarContraseña(SesionLogic.UsuarioLogueado, _usuarioSeleccionado);
+            _successMessage = "Contraseña modificada correctamente. La nueva contraseña es: " + _usuarioSeleccionado.Contrasena;
         }
         catch (Exception e)
         {
-            errorMessage = e.Message;
+            _errorMessage = e.Message;
         }
     }
 }

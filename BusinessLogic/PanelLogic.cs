@@ -170,7 +170,7 @@ public class PanelLogic : IPanelLogic
         return _equipos.ObtenerTareasPorEpica(nombreEquipo, nombrePanel, tituloEpica);
     }
     
-    public string? ValidarYGuardarTarea(Tarea tarea, Panel panel, Usuario usuario)
+    public string? ValidarYGuardarTarea(Tarea tarea, Panel? panel, Usuario usuario)
     {
         try
         {
@@ -182,7 +182,7 @@ public class PanelLogic : IPanelLogic
         }
     }
 
-    public string? ValidarYGuardarEpica(string nombreEquipo, Epica epica, Panel panel, Usuario usuario)
+    public string? ValidarYGuardarEpica(string nombreEquipo, Epica epica, Panel? panel, Usuario usuario)
     {
         try
         {

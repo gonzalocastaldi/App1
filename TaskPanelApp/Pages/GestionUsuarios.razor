@@ -1,14 +1,13 @@
 @page "/gestionUsuarios"
-@using BusinessLogic
 @using BusinessLogic.Interfaces
 @using Domain
-@inject SesionLogic sesionLogic
-@inject IUsuarioLogic usuarioLogic
+@inject SesionLogic SesionLogic
+@inject IUsuarioLogic UsuarioLogic
 @inject NavigationManager NavigationManager
 
 <h3>Gestión de usuarios</h3>
 <p>
-    @if (sesionLogic.UsuarioLogueado != null && sesionLogic.UsuarioLogueado.EsAdmin)
+    @if (SesionLogic.UsuarioLogueado.EsAdmin)
     {
         <button @onclick="AgregarUsuario" class="btn btn-primary">Agregar usuario</button>
         <a>   </a>
@@ -36,22 +35,22 @@ else
 
 @code {
     private List<Usuario> _usuarios = new List<Usuario>();
-    private bool firstRender = true;
+    private bool _firstRender = true;
 
 
     protected override void OnInitialized()
     {
         try
         {
-            if (sesionLogic.UsuarioLogueado != null)
+            if (SesionLogic.UsuarioLogueado != null)
             {
-                if (sesionLogic.UsuarioLogueado.EsAdmin)
+                if (SesionLogic.UsuarioLogueado.EsAdmin)
             {
-                _usuarios = usuarioLogic.ListarUsuarios(sesionLogic.UsuarioLogueado);    
+                _usuarios = UsuarioLogic.ListarUsuarios(SesionLogic.UsuarioLogueado);    
             }
             else
             {
-                _usuarios.Add(sesionLogic.UsuarioLogueado);
+                _usuarios.Add(SesionLogic.UsuarioLogueado);
             }
             }
             
@@ -64,9 +63,9 @@ else
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        if (firstRender && SesionLogic.UsuarioLogueado == null)
         {
-            if (sesionLogic.UsuarioLogueado == null)
+            if (SesionLogic.UsuarioLogueado == null)
             {
                 NavigationManager.NavigateTo("https://localhost:7014/", true);
             }

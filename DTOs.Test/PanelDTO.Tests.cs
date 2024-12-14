@@ -20,7 +20,7 @@ public class PanelDTO_Tests
         List<TareaDTO> tareas = new List<TareaDTO>();
         List<EpicaDTO> epicas = new List<EpicaDTO>();
         PanelDTO panel = new PanelDTO("Panel1", "Descripcion", tareas, epicas, "equipo1");
-        Panel panelEntidad = panel.AEntidad();
+        Panel? panelEntidad = panel.AEntidad();
         Assert.AreEqual("Panel1", panelEntidad.Nombre);
     }
 }

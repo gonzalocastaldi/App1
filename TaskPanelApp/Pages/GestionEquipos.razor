@@ -1,22 +1,20 @@
 @page "/gestionEquipos"
-@using BusinessLogic
 @using BusinessLogic.Interfaces
 @using Domain
-@inject SesionLogic sesionLogic
-@inject IEquipoLogic equipoLogic
+@inject SesionLogic SesionLogic
+@inject IEquipoLogic EquipoLogic
 @inject NavigationManager NavigationManager
 
 
 <h3>Gestión de equipos</h3>
 
 <p>
-    @if (sesionLogic.UsuarioLogueado != null && sesionLogic.UsuarioLogueado.EsAdmin)
+    @if (SesionLogic.UsuarioLogueado.EsAdmin)
     {
         <button @onclick="CrearNuevoEquipo" class="btn btn-primary">Crear equipo</button>
         <a>   </a>
         <button @onclick="EliminarEquipo" class="btn btn-primary">Eliminar equipo</button>
         <a>   </a>
-        @* al equipo se le agregan nuevos usuarios dentro de modificar equipo*@
         <button @onclick="ModificarEquipo" class="btn btn-primary">Modificar equipo</button>
     }
 </p>
@@ -39,16 +37,14 @@ else
 
 @code {
     private List<Equipo> _equipos = new List<Equipo>();
-    private bool firstRender = true;
-
-
+    
     protected override void OnInitialized()
     {
         try
         {
-            if(sesionLogic.UsuarioLogueado != null)
+            if(SesionLogic.UsuarioLogueado != null)
             {
-                _equipos = equipoLogic.ListarEquipos(sesionLogic.UsuarioLogueado);
+                _equipos = EquipoLogic.ListarEquipos(SesionLogic.UsuarioLogueado);
             }
         }
         catch (Exception e)
@@ -59,9 +55,9 @@ else
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        if (firstRender && SesionLogic.UsuarioLogueado == null)
         {
-            if (sesionLogic.UsuarioLogueado == null)
+            if (SesionLogic.UsuarioLogueado == null)
             {
                 NavigationManager.NavigateTo("https://localhost:7014/", true);
             }

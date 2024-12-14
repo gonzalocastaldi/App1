@@ -1,10 +1,8 @@
 ﻿@page "/"
-@using BusinessLogic
 @using BusinessLogic.Interfaces
 @using Domain
-@inject SesionLogic sesionLogic
 @inject NavigationManager NavigationManager
-@inject IUsuarioLogic usuarioLogic
+@inject IUsuarioLogic UsuarioLogic
 
 <PageTitle>TaskPanel</PageTitle>
 
@@ -14,28 +12,28 @@
     <br/>
     <div class="form-group">
         <label for="Name">Email:</label>
-        <input id="Name" class="form-control" maxlength="50" @bind="email"/>
+        <input id="Name" class="form-control" maxlength="50" @bind="_email"/>
     </div>
 
     <br/>
     <div class="form-group">
         <label for="Password">Contraseña:</label>
-        <input id="Password" type="password" class="form-control" maxlength="50" @bind="contrasena"/>
+        <input id="Password" type="password" class="form-control" maxlength="50" @bind="_contrasena"/>
     </div>
     
     <br/>
     <button type="submit" class="btn btn-primary">Login</button>
 </form>
 
-@if (!string.IsNullOrEmpty(mensajeDeError))
+@if (!string.IsNullOrEmpty(_mensajeDeError))
 {
     <br/>
     <div class="alert alert-danger" role="alert">
-        @mensajeDeError
+        @_mensajeDeError
     </div>
 }
 
-@if (monstrarMensajeDeLogin)
+@if (_monstrarMensajeDeLogin)
 {
     <br/>
     <div class="alert alert-success" role="alert">
@@ -44,26 +42,26 @@
 }
 
 @code {
-    Usuario usuario;
-    private string email = string.Empty;
-    private string contrasena = string.Empty;
-    private string mensajeDeError;
-    private bool monstrarMensajeDeLogin = false;
+    Usuario? _usuario;
+    private string? _email;
+    private string? _contrasena;
+    private string? _mensajeDeError;
+    private bool _monstrarMensajeDeLogin = false;
     
     protected override void OnInitialized()
     {
         
-        usuario = new Usuario();
+        _usuario = new Usuario();
     }
 
     private async Task HandleLogin()
     {
         try
         {
-            usuario.Email = email;
-            usuario.Contrasena = contrasena;
-            usuarioLogic.IniciarSesion(usuario);
-            monstrarMensajeDeLogin = true;
+            _usuario.Email = _email;
+            _usuario.Contrasena = _contrasena;
+            UsuarioLogic.IniciarSesion(_usuario);
+            _monstrarMensajeDeLogin = true;
             await Task.Delay(1000);
             NavigationManager.NavigateTo("/inicio");
             ResetValues();
@@ -71,15 +69,15 @@
         catch (Exception ex)
         {
             
-            mensajeDeError = ex.Message;
+            _mensajeDeError = ex.Message;
         }
     }
 
     private void ResetValues()
     {
-        email = string.Empty;
-        contrasena = string.Empty;
-        mensajeDeError = null; 
+        _email = string.Empty;
+        _contrasena = string.Empty;
+        _mensajeDeError = null; 
     }
 
 }

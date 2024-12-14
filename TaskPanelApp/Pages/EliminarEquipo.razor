@@ -1,14 +1,13 @@
 @page "/eliminarEquipo"
-@using BusinessLogic
 @using BusinessLogic.Interfaces
 @using Domain
-@inject IEquipoLogic equipoLogic
+@inject IEquipoLogic EquipoLogic
 @inject NavigationManager NavigationManager
-@inject SesionLogic sesionLogic
+@inject SesionLogic SesionLogic
 @inject NavigationManager Navigation
 
 
-@if (sesionLogic.UsuarioLogueado != null && sesionLogic.UsuarioLogueado.EsAdmin)
+@if (SesionLogic.UsuarioLogueado.EsAdmin)
 {
     <h3>Eliminar equipo</h3>
 
@@ -54,10 +53,10 @@
         <div class="alert alert-danger">@_validationError</div>
     }
 
-    @if (!string.IsNullOrEmpty(successMessage))
+    @if (!string.IsNullOrEmpty(_successMessage))
     {
         <div class="alert alert-success">
-            <p>@successMessage</p>
+            <p>@_successMessage</p>
         </div>
     }
 }
@@ -70,27 +69,27 @@ else
 @code {
     private List<Equipo> _equipos = new List<Equipo>();
     private string? _validationError;
-    private string _nombreEquipo;
-    private Equipo _equipoAEliminar;
-    private Usuario _UsuarioLogueado;
-    private string successMessage;
-    private bool firstRender = true;
+    private string? _nombreEquipo;
+    private Equipo? _equipoAEliminar;
+    private Usuario? _usuarioLogueado;
+    private string? _successMessage;
+    private bool _firstRender = true;
 
 
     protected override void OnInitialized()
     {
-        if(sesionLogic.UsuarioLogueado != null)
+        if(SesionLogic.UsuarioLogueado != null)
         {
-            _UsuarioLogueado = sesionLogic.UsuarioLogueado;
-            _equipos = equipoLogic.ListarEquipos(_UsuarioLogueado);
+            _usuarioLogueado = SesionLogic.UsuarioLogueado;
+            _equipos = EquipoLogic.ListarEquipos(_usuarioLogueado);
         }
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        if (firstRender && SesionLogic.UsuarioLogueado == null)
         {
-            if (sesionLogic.UsuarioLogueado == null)
+            if (SesionLogic.UsuarioLogueado == null)
             {
                 Navigation.NavigateTo("https://localhost:7014/", true);
             }
@@ -104,7 +103,7 @@ else
         {
             _equipoAEliminar = _equipos.FirstOrDefault(e => e.Nombre == _nombreEquipo);
             _validationError = null;
-            successMessage = null;
+            _successMessage = null;
         }
     }
 
@@ -114,10 +113,10 @@ else
         {
             try
             {
-                equipoLogic.EliminarEquipo(_nombreEquipo, _UsuarioLogueado);   
+                EquipoLogic.EliminarEquipo(_nombreEquipo, _usuarioLogueado);   
                 _equipos.Remove(_equipoAEliminar);
                 _validationError = null;
-                successMessage = "Equipo eliminado exitosamente.";
+                _successMessage = "Equipo eliminado exitosamente.";
                 _equipoAEliminar = null;
             }catch (Exception e)
             {

@@ -44,7 +44,7 @@ public class Epica_Tests
         Usuario usuario = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3),
             "123456Aa=");
         Equipo equipo = new Equipo("equipo1", 10, "des", usuario);
-        Panel panel = new Panel("panel", "desc", equipo.Nombre);
+        Panel? panel = new Panel("panel", "desc", equipo.Nombre);
         Epica epica = new Epica("titulo", Prioridad.Urgente, "desc", new DateTime(2026, 12, 31));
         Tarea tarea1 = new Tarea("titulo1", new DateTime(2024, 12, 23), "desc", 2, panel, panel, 20);
         tarea1.EsfuerzoInvertido = 25;
@@ -117,7 +117,7 @@ public class Epica_Tests
         Usuario usuario = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3),
             "123456Aa=");
         Equipo equipo = new Equipo("equipo1", 10, "des", usuario);
-        Panel panel = new Panel("panel", "desc", equipo.Nombre);
+        Panel? panel = new Panel("panel", "desc", equipo.Nombre);
         Epica epica = new Epica("titulo", Prioridad.Urgente, "desc", new DateTime(2026, 12, 31));
         Tarea tarea1 = new Tarea("titulo1", new DateTime(2024, 12, 23), "desc", 2, panel, panel, 20);
         tarea1.EsfuerzoInvertido = 25;

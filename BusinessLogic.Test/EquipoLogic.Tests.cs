@@ -205,7 +205,7 @@ public class EquipoLogicTests
         public void EliminarUnEquipo_Cuando_TienePanelesCreados()
         {
             _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", _usuario);
-            Panel panel = new Panel("panel1", "descripcion", "equipo1");
+            Panel? panel = new Panel("panel1", "descripcion", "equipo1");
             _equipoLogic.AgregarPanel("equipo1", panel, _usuario);
             _equipoLogic.EliminarEquipo("equipo1", _usuario);
         }
@@ -230,7 +230,7 @@ public class EquipoLogicTests
         public void AgregarPanelAEquipo()
         {
             _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", _usuario);
-            Panel panel = new Panel("panel1", "descripcion", "equipo1");
+            Panel? panel = new Panel("panel1", "descripcion", "equipo1");
             _equipoLogic.AgregarPanel("equipo1", panel, _usuario);
             Assert.IsTrue(_repositorioEquipo.ObtenerTodosLosEquipos().First(e => e.Nombre == "equipo1").Paneles.Contains(panel));
         }
@@ -240,9 +240,9 @@ public class EquipoLogicTests
         public void AgregarPanelAEquipo_Cuando_Ya_ExisteUnPanelConElMismoNombre()
         {
             _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", _usuario);
-            Panel panel = new Panel("panel1", "descripcion", "equipo1");
+            Panel? panel = new Panel("panel1", "descripcion", "equipo1");
             _equipoLogic.AgregarPanel("equipo1", panel, _usuario);
-            Panel panel2 = new Panel("panel1", "descripcion", "equipo1");
+            Panel? panel2 = new Panel("panel1", "descripcion", "equipo1");
             _equipoLogic.AgregarPanel("equipo1", panel2, _usuario);
 
         }
@@ -252,7 +252,7 @@ public class EquipoLogicTests
         public void AgregarPanelAEquipoNoExistente()
         {
             _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", _usuario);
-            Panel panel = new Panel("panel1", "descripcion", "equipo1");
+            Panel? panel = new Panel("panel1", "descripcion", "equipo1");
             _equipoLogic.AgregarPanel("equipoNoExiste", panel, _usuario);
         }
 
@@ -260,7 +260,7 @@ public class EquipoLogicTests
         public void EliminarPanel()
         {
             _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", _usuario);
-            Panel panel = new Panel("panel1", "descripcion", "equipo1");
+            Panel? panel = new Panel("panel1", "descripcion", "equipo1");
             _equipoLogic.AgregarPanel("equipo1", panel, _usuario);
             _equipoLogic.EliminarPanel("equipo1", "panel1", _usuario);
             Assert.IsFalse(_repositorioEquipo.ObtenerTodosLosEquipos().First(e => e.Nombre == "equipo1").Paneles.Count > 1);
@@ -270,7 +270,7 @@ public class EquipoLogicTests
         public void EliminarPanelDeFormaPermanente()
         {
             _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", _usuario);
-            Panel panel = new Panel("panel1", "descripcion", "equipo1");
+            Panel? panel = new Panel("panel1", "descripcion", "equipo1");
             _equipoLogic.AgregarPanel("equipo1", panel, _usuario);
             _equipoLogic.EliminarPanelDeFormaPermanente("equipo1", "panel1", _usuario);
             Assert.IsFalse(_repositorioEquipo.ObtenerTodosLosEquipos().First(e => e.Nombre == "equipo1").Paneles.Count > 1);
@@ -281,7 +281,7 @@ public class EquipoLogicTests
         public void EliminarPanelDeEquipoNoExistente()
         {
             _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", _usuario);
-            Panel panel = new Panel("panel1", "descripcion", "equipo1");
+            Panel? panel = new Panel("panel1", "descripcion", "equipo1");
             _equipoLogic.AgregarPanel("equipo1", panel, _usuario);
             _equipoLogic.EliminarPanel("equipoNoExiste", "panel1", _usuario);
         }
@@ -291,7 +291,7 @@ public class EquipoLogicTests
         public void EliminarPanelNoExistente()
         {
             _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", _usuario);
-            Panel panel = new Panel("panel1", "descripcion", "equipo1");
+            Panel? panel = new Panel("panel1", "descripcion", "equipo1");
             _equipoLogic.AgregarPanel("equipo1", panel, _usuario);
             _equipoLogic.EliminarPanel("equipo1", "panelNoExiste", _usuario);
         }
@@ -326,7 +326,7 @@ public class EquipoLogicTests
         {
             DateTimeWrapper.FixedDate = new DateTime(2010, 7, 2);
             _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", _usuario);
-            Panel panel = new Panel("panel1", "descripcion", "equipo1");
+            Panel? panel = new Panel("panel1", "descripcion", "equipo1");
             _equipoLogic.AgregarPanel("equipo1", panel, _usuario);
             Tarea tarea = new Tarea("tarea1", new DateTime(2020, 10, 10), "descripcion", 2, panel, panel);
             PanelLogic _panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -341,7 +341,7 @@ public class EquipoLogicTests
         {
             DateTimeWrapper.FixedDate = new DateTime(2010, 7, 2);
             _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", _usuario);
-            Panel panel = new Panel("panel1", "descripcion", "equipo1");
+            Panel? panel = new Panel("panel1", "descripcion", "equipo1");
             _equipoLogic.AgregarPanel("equipo1", panel, _usuario);
             Tarea tarea = new Tarea("tarea1", new DateTime(2020, 10, 10), "descripcion", 2, panel, panel);
             PanelLogic _panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -355,7 +355,7 @@ public class EquipoLogicTests
         {
             DateTimeWrapper.FixedDate = new DateTime(2010, 7, 2);
             _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", _usuario);
-            Panel panel = new Panel("panel1", "descripcion", "equipo1");
+            Panel? panel = new Panel("panel1", "descripcion", "equipo1");
             _equipoLogic.AgregarPanel("equipo1", panel, _usuario);
             Tarea tarea = new Tarea("tarea1", new DateTime(2020, 10, 10), "descripcion", 2, panel, panel);
             PanelLogic _panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -369,7 +369,7 @@ public class EquipoLogicTests
         {
             DateTimeWrapper.FixedDate = new DateTime(2010, 7, 2);
             _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", _usuario);
-            Panel panel = new Panel("panel1", "descripcion", "equipo1");
+            Panel? panel = new Panel("panel1", "descripcion", "equipo1");
             _equipoLogic.AgregarPanel("equipo1", panel, _usuario);
             Tarea tarea = new Tarea("tarea1", new DateTime(2020, 10, 10), "descripcion", 2, panel, panel);
             PanelLogic _panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -382,7 +382,7 @@ public class EquipoLogicTests
         public void EliminarEquipoConPaneles()
         {
             _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", _usuario);
-            Panel panel = new Panel("panel1", "descripcion", "equipo1");
+            Panel? panel = new Panel("panel1", "descripcion", "equipo1");
             _equipoLogic.AgregarPanel("equipo1", panel, _usuario);
             _equipoLogic.EliminarEquipo("equipo1", _usuario);
         }
@@ -428,7 +428,7 @@ public class EquipoLogicTests
             Equipo equipo = new Equipo("EquipoPrueba", 10, "desc", usuario);
             _repositorioEquipo.Agregar(equipo);
             int paneles = equipo.Paneles.Count;
-            Panel panel = new Panel("PanelPrueba", "desc", "EquipoPrueba");
+            Panel? panel = new Panel("PanelPrueba", "desc", "EquipoPrueba");
             equipoLogic.ValidarYGuardarPanel(panel, equipo, usuario);
             Assert.AreEqual(paneles + 1, equipo.Paneles.Count());
         }
@@ -437,8 +437,8 @@ public class EquipoLogicTests
         public void ListarPaneles_DeberiaDevolverListaDePaneles()
         {
             _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", _usuario);
-            Panel panel1 = new Panel("panel1", "descripcion1", "equipo1");
-            Panel panel2 = new Panel("panel2", "descripcion2", "equipo1");
+            Panel? panel1 = new Panel("panel1", "descripcion1", "equipo1");
+            Panel? panel2 = new Panel("panel2", "descripcion2", "equipo1");
             _equipoLogic.AgregarPanel("equipo1", panel1, _usuario);
             _equipoLogic.AgregarPanel("equipo1", panel2, _usuario);
             Equipo equipo = _repositorioEquipo.ObtenerTodosLosEquipos().FirstOrDefault(e => e.Nombre == "equipo1");

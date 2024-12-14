@@ -29,7 +29,7 @@ public class EpicaLogic_Tests
         EquipoLogic equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
         Usuario usuario = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
         equipoLogic.CrearEquipo("equipo1", 10, "asdasdasdasd", usuario);
-        Panel panel = new Panel("panel1", "descripcion1", "equipo1");
+        Panel? panel = new Panel("panel1", "descripcion1", "equipo1");
         equipoLogic.AgregarPanel("equipo1", panel, usuario);
         Epica epica = new Epica("titulo", Prioridad.Baja, "descripcion", new DateTime(2025, 11, 11));
         panelLogic.AgregarEpica("equipo1","panel1", epica, usuario);
@@ -42,7 +42,7 @@ public class EpicaLogic_Tests
         Usuario usuarioCreador = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
         EquipoLogic _equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
         _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", usuarioCreador);
-        Panel panel = new Panel("nombre", "desc", "equipo1");
+        Panel? panel = new Panel("nombre", "desc", "equipo1");
         _equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
         Epica epica = new Epica("titulo", Prioridad.Baja, "descripcion", new DateTime(2025, 11, 11));
         PanelLogic panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -60,7 +60,7 @@ public class EpicaLogic_Tests
         Usuario usuarioCreador = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
         EquipoLogic _equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
         _equipoLogic.CrearEquipo("equipo1", 10, "descripcion", usuarioCreador);
-        Panel panel = new Panel("nombre", "desc", "equipo1");
+        Panel? panel = new Panel("nombre", "desc", "equipo1");
         _equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
         Epica epica = new Epica("titulo", Prioridad.Baja, "descripcion", new DateTime(2025, 11, 11));
         PanelLogic panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -76,7 +76,7 @@ public class EpicaLogic_Tests
         Usuario usuarioCreador = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
         EquipoLogic equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
         equipoLogic.CrearEquipo("equipo1", 10, "descripcion", usuarioCreador);
-        Panel panel = new Panel("nombre", "desc", "equipo1");
+        Panel? panel = new Panel("nombre", "desc", "equipo1");
         equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
         Epica epica = new Epica("titulo", Prioridad.Baja, "descripcion", new DateTime(2025, 11, 11));
         PanelLogic panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -94,7 +94,7 @@ public class EpicaLogic_Tests
         Usuario usuarioCreador = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
         EquipoLogic equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
         equipoLogic.CrearEquipo("equipo1", 10, "descripcion", usuarioCreador);
-        Panel panel = new Panel("nombre", "desc", "equipo1");
+        Panel? panel = new Panel("nombre", "desc", "equipo1");
         equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
         Epica epica = new Epica("titulo", Prioridad.Baja, "descripcion", new DateTime(2025, 11, 11));
         PanelLogic panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -109,7 +109,7 @@ public class EpicaLogic_Tests
         Usuario usuarioCreador = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
         EquipoLogic equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
         equipoLogic.CrearEquipo("equipo1", 10, "descripcion", usuarioCreador);
-        Panel panel = new Panel("nombre", "desc", "equipo1");
+        Panel? panel = new Panel("nombre", "desc", "equipo1");
         equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
         Epica epica = new Epica("titulo", Prioridad.Baja, "descripcion", new DateTime(2025, 11, 11));
         PanelLogic panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
@@ -123,7 +123,7 @@ public class EpicaLogic_Tests
         Usuario usuarioCreador = new Usuario(true, "Gonzalo", "Castaldi", "gonzalo@gmail.com", new DateTime(2004, 5, 3), "123456Aa=");
         EquipoLogic equipoLogic = new EquipoLogic(_repositorioEquipo, _repositorioUsuario, _context);
         equipoLogic.CrearEquipo("equipo1", 10, "descripcion", usuarioCreador);
-        Panel panel = new Panel("nombre", "desc", "equipo1");
+        Panel? panel = new Panel("nombre", "desc", "equipo1");
         equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
         Epica epica = new Epica("titulo", Prioridad.Baja, "descripcion", new DateTime(2025, 11, 11));
         PanelLogic panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);

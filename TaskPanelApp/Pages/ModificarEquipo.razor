@@ -1,13 +1,12 @@
 @page "/modificarEquipo"
-@using BusinessLogic
 @using BusinessLogic.Interfaces
 @using Domain
-@inject IEquipoLogic equipoLogic
-@inject IUsuarioLogic usuarioLogic
+@inject IEquipoLogic EquipoLogic
+@inject IUsuarioLogic UsuarioLogic
 @inject NavigationManager NavigationManager
 @inject SesionLogic sesionLogic
 
-@if (sesionLogic.UsuarioLogueado != null && sesionLogic.UsuarioLogueado.EsAdmin)
+@if (sesionLogic.UsuarioLogueado.EsAdmin)
 {
     <h3>Modificar equipo</h3>
 
@@ -24,23 +23,23 @@
 
     <button class="btn btn-primary" @onclick="CargarEquipo">Cargar equipo</button>
 
-    @if (!string.IsNullOrEmpty(errorMessage))
+    @if (!string.IsNullOrEmpty(_errorMessage))
     {
-        <div class="alert alert-danger">@errorMessage</div>
+        <div class="alert alert-danger">@_errorMessage</div>
     }
 
-    @if (!string.IsNullOrEmpty(successMessage))
+    @if (!string.IsNullOrEmpty(_successMessage))
     {
-        <div class="alert alert-success">@successMessage</div>
+        <div class="alert alert-success">@_successMessage</div>
     }
     
     @if (_equipoAModificar != null)
     {
         <div class="mb-3">
             <label for="nombre">Nombre:</label>
-            @if (editandoNombre)
+            @if (_editandoNombre)
             {
-                <input id="nombre" type="text" class="form-control" maxlength="50" @bind="nuevoNombre" required />
+                <input id="nombre" type="text" class="form-control" maxlength="50" @bind="_nuevoNombre" required />
                 <button class="btn btn-success" @onclick="GuardarNombre">Guardar</button>
             }
             else
@@ -57,9 +56,9 @@
 
         <div class="mb-3">
             <label for="descripcion">Descripción:</label>
-            @if (editandoDescripcion)
+            @if (_editandoDescripcion)
             {
-                <input id="descripcion" type="text" class="form-control" maxlength="50" @bind="nuevaDescripcion" />
+                <input id="descripcion" type="text" class="form-control" maxlength="50" @bind="_nuevaDescripcion" />
                 <button class="btn btn-success" @onclick="GuardarDescripcion">Guardar</button>
             }
             else
@@ -76,9 +75,9 @@
 
         <div class="mb-3">
             <label for="cantidadMaxUsuarios">Cantidad máxima de usuarios:</label>
-            @if (editandoCantidadMaxima)
+            @if (_editandoCantidadMaxima)
             {
-                <input id="cantidadMaxUsuarios" type="number" class="form-control" @bind="nuevaCantidadMaxima" min="@_equipoAModificar.CantidadActualUsuarios" required/>
+                <input id="cantidadMaxUsuarios" type="number" class="form-control" @bind="_nuevaCantidadMaxima" min="@_equipoAModificar.CantidadActualUsuarios" required/>
                 <button class="btn btn-success" @onclick="GuardarCantidadMaxima">Guardar</button>
             }
             else
@@ -113,15 +112,14 @@ else
 
 @code {
     private List<Equipo> _equipos = new List<Equipo>();
-    private List<Usuario> _usuariosDisponibles = new List<Usuario>();
-    private string? _emailUsuarioSeleccionado, errorMessage, nuevoNombre, nuevaDescripcion, successMessage;
+    private List<Usuario?> _usuariosDisponibles = new List<Usuario?>();
+    private string? _emailUsuarioSeleccionado, _errorMessage, _nuevoNombre, _nuevaDescripcion, _successMessage;
     private Usuario? _usuarioSeleccionado;
-    private string _nombreEquipo;
-    private Equipo _equipoAModificar;
-    private Usuario _UsuarioLogueado;
-    private bool editandoNombre, editandoDescripcion, editandoCantidadMaxima;
-    private int nuevaCantidadMaxima;
-    private bool firstRender = true;
+    private string? _nombreEquipo;
+    private Equipo? _equipoAModificar;
+    private Usuario? _usuarioLogueado;
+    private bool _editandoNombre, _editandoDescripcion, _editandoCantidadMaxima;
+    private int _nuevaCantidadMaxima;
 
 
     protected override void OnInitialized()
@@ -129,8 +127,8 @@ else
         try
         {
             if(sesionLogic.UsuarioLogueado != null){
-                _UsuarioLogueado = sesionLogic.UsuarioLogueado;
-                _equipos = equipoLogic.ListarEquipos(_UsuarioLogueado);
+                _usuarioLogueado = sesionLogic.UsuarioLogueado;
+                _equipos = EquipoLogic.ListarEquipos(_usuarioLogueado);
                 CargarListaUsuarios();
             }
         }
@@ -158,50 +156,50 @@ else
         if (!string.IsNullOrEmpty(_nombreEquipo))
         {
             _equipoAModificar = _equipos.FirstOrDefault(e => e.Nombre == _nombreEquipo);
-            errorMessage = null;
-            successMessage = null;
+            _errorMessage = null;
+            _successMessage = null;
         }
     }
 
-    private void EditarNombre() => editandoNombre = true;
+    private void EditarNombre() => _editandoNombre = true;
 
     private void GuardarNombre()
     {
         try
         {
-            equipoLogic.CambiarNombre(_equipoAModificar.Nombre, nuevoNombre, _UsuarioLogueado);
-            errorMessage = null;
-            successMessage = "Nombre cambiado exitosamente.";
-            editandoNombre = false;
+            EquipoLogic.CambiarNombre(_equipoAModificar.Nombre, _nuevoNombre, _usuarioLogueado);
+            _errorMessage = null;
+            _successMessage = "Nombre cambiado exitosamente.";
+            _editandoNombre = false;
             OnInitialized();
         }
         catch (Exception e)
         {
-            errorMessage = e.Message;
+            _errorMessage = e.Message;
         }
     }
 
-    private void EditarDescripcion() => editandoDescripcion = true;
+    private void EditarDescripcion() => _editandoDescripcion = true;
 
     private void GuardarDescripcion()
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(nuevaDescripcion))
+            if (string.IsNullOrWhiteSpace(_nuevaDescripcion))
             {
-                errorMessage = "La descripción no puede ser vacía.";
+                _errorMessage = "La descripción no puede ser vacía.";
             }
             else
             {
-                equipoLogic.CambiarDescripcion(_equipoAModificar.Nombre, nuevaDescripcion, _UsuarioLogueado);
-                errorMessage = null;
-                successMessage = "Descripción cambiada exitosamente.";
-                editandoDescripcion = false;
+                EquipoLogic.CambiarDescripcion(_equipoAModificar.Nombre, _nuevaDescripcion, _usuarioLogueado);
+                _errorMessage = null;
+                _successMessage = "Descripción cambiada exitosamente.";
+                _editandoDescripcion = false;
             }
         }
         catch (Exception e)
         {
-            errorMessage = e.Message;
+            _errorMessage = e.Message;
         }
     }
 
@@ -209,11 +207,11 @@ else
     {
         try
         {
-            _usuariosDisponibles = usuarioLogic.ListarUsuarios(_UsuarioLogueado);
+            _usuariosDisponibles = UsuarioLogic.ListarUsuarios(_usuarioLogueado);
         }
         catch (Exception e)
         {
-            errorMessage = e.Message;
+            _errorMessage = e.Message;
         }
     }
 
@@ -224,13 +222,13 @@ else
             _usuarioSeleccionado = BuscarUsuarioSeleccionado(_emailUsuarioSeleccionado);
             ValidarUsuarioExistente(_usuarioSeleccionado);
             ValidarCantidadMaximaUsuarios();
-            equipoLogic.AgregarUsuario(_usuarioSeleccionado, _nombreEquipo, _UsuarioLogueado);
-            errorMessage = null;
-            successMessage = "Usuario agregado correctamente.";
+            EquipoLogic.AgregarUsuario(_usuarioSeleccionado, _nombreEquipo, _usuarioLogueado);
+            _errorMessage = null;
+            _successMessage = "Usuario agregado correctamente.";
         }
         catch (Exception e)
         {
-            errorMessage = e.Message;
+            _errorMessage = e.Message;
         }
     }
 
@@ -264,21 +262,21 @@ else
         }
     }
     
-    private void EditarCantidadMaxima() => editandoCantidadMaxima = true;
+    private void EditarCantidadMaxima() => _editandoCantidadMaxima = true;
 
     private void GuardarCantidadMaxima()
     {
         try
         {
-            successMessage = null;
-            errorMessage = null;
-            equipoLogic.CambiarCantidadMaximaDeUsuarios(_equipoAModificar.Nombre, nuevaCantidadMaxima, _UsuarioLogueado);
-            successMessage = "Cantidad máxima de usuarios cambiada exitosamente.";
-            editandoCantidadMaxima = false;
+            _successMessage = null;
+            _errorMessage = null;
+            EquipoLogic.CambiarCantidadMaximaDeUsuarios(_equipoAModificar.Nombre, _nuevaCantidadMaxima, _usuarioLogueado);
+            _successMessage = "Cantidad máxima de usuarios cambiada exitosamente.";
+            _editandoCantidadMaxima = false;
         }
         catch (Exception e)
         {
-            errorMessage = e.Message;
+            _errorMessage = e.Message;
         }
     }
 }

@@ -192,7 +192,7 @@ namespace BusinessLogic
             return papeleradto;
         }
         
-        public PanelDTO DePanelAPanelDTO(Panel panel)
+        public PanelDTO DePanelAPanelDTO(Panel? panel)
         {
             PanelDTO panelDTO = new PanelDTO();
             panelDTO.Nombre = panel.Nombre;

@@ -21,9 +21,9 @@ public class PanelDTO
     
     public PanelDTO(){}
     
-    public Panel AEntidad()
+    public Panel? AEntidad()
     {
-        Panel panel = new Panel(Nombre, Descripcion, EquipoAlQuePertenece);
+        Panel? panel = new Panel(Nombre, Descripcion, EquipoAlQuePertenece);
         foreach (var tarea in Tareas)
         {
             panel.Tareas.Add(tarea.AEntidad());

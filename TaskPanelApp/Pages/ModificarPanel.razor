@@ -1,10 +1,9 @@
 ﻿@page "/ModificarPanel"
 @using Domain
-@using BusinessLogic
 @using BusinessLogic.Interfaces
-@inject IEquipoLogic equipoLogic
-@inject IPanelLogic panelLogic
-@inject SesionLogic sesionLogic
+@inject IEquipoLogic EquipoLogic
+@inject IPanelLogic PanelLogic
+@inject SesionLogic SesionLogic
 @inject NavigationManager Navigation
 
 
@@ -12,9 +11,9 @@
 
 <div class="mb-3 d-flex align-items-center">
     <label for="equipoSelect" class="me-2">Seleccionar Equipo:</label>
-    <select id="equipoSelect" class="form-control me-2" @bind="nombreEquipoSeleccionado">
+    <select id="equipoSelect" class="form-control me-2" @bind="_nombreEquipoSeleccionado">
         <option value="">Seleccione un equipo</option>
-        @foreach (var equipo in equipos)
+        @foreach (var equipo in _equipos)
         {
             <option value="@equipo.Nombre">@equipo.Nombre</option>
         }
@@ -22,13 +21,13 @@
     <button class="btn btn-primary" @onclick="CargarEquipo">Cargar Equipo</button>
 </div>
 
-@if (equipoSeleccionado != null)
+@if (_equipoSeleccionado != null)
 {
     <div class="mb-3 d-flex align-items-center">
         <label for="panelSelect" class="me-2">Seleccionar Panel:</label>
-        <select id="panelSelect" class="form-control me-2" @bind="nombrePanelSeleccionado">
+        <select id="panelSelect" class="form-control me-2" @bind="_nombrePanelSeleccionado">
             <option value="">Seleccione un panel</option>
-            @foreach (var panel in paneles.Where(p => p.Nombre != "Tareas Vencidas"))
+            @foreach (var panel in _paneles.Where(p => p.Nombre != "Tareas Vencidas"))
             {
                 <option value="@panel.Nombre">@panel.Nombre</option>
             }
@@ -36,18 +35,18 @@
         <button class="btn btn-primary" @onclick="CargarPanel">Cargar Panel</button>
     </div>
 }
-@if (panelSeleccionado != null)
+@if (_panelSeleccionado != null)
 {
     <div class="mb-3">
         <label for="nombre">Nombre:</label>
-        @if (editandoNombre)
+        @if (_editandoNombre)
         {
-            <input id="nombre" type="text" class="form-control" maxlength="50" @bind="nuevoNombre" />
+            <input id="nombre" type="text" class="form-control" maxlength="50" @bind="_nuevoNombre" />
             <button class="btn btn-success" @onclick="GuardarNombre">Guardar</button>
         }
         else
         {
-            <p>@panelSeleccionado.Nombre</p>
+            <p>@_panelSeleccionado.Nombre</p>
             <button class="btn btn-primary" @onclick="EditarNombre">Modificar Nombre</button>
         }
     </div>
@@ -55,56 +54,54 @@
 
     <div class="mb-3">
         <label for="descripcion">Descripcion:</label>
-        @if (editandoDescripcion)
+        @if (_editandoDescripcion)
         {
-            <input id="descripcion" type="text" class="form-control" maxlength="50" @bind="nuevaDescripcion" />
+            <input id="descripcion" type="text" class="form-control" maxlength="50" @bind="_nuevaDescripcion" />
             <button class="btn btn-success" @onclick="GuardarDescripcion">Guardar</button>
         }
         else
         {
-            <p>@panelSeleccionado.Descripcion</p>
+            <p>@_panelSeleccionado.Descripcion</p>
             <button class="btn btn-primary" @onclick="EditarDescripcion">Modificar Descripcion</button>
         }
     </div>
 }
 
-@if (!string.IsNullOrEmpty(errorMessage))
+@if (!string.IsNullOrEmpty(_errorMessage))
 {
     <div class="alert alert-danger">
-        <p>@errorMessage</p>
+        <p>@_errorMessage</p>
     </div>
 }
-@if (!string.IsNullOrEmpty(successMessage))
+@if (!string.IsNullOrEmpty(_successMessage))
 {
     <div class="alert alert-success">
-        <p>@successMessage</p>
+        <p>@_successMessage</p>
     </div>
 }
 @code {
-    private List<Equipo> equipos = new List<Equipo>();
-    private string? nombreEquipoSeleccionado, nombrePanelSeleccionado;
-    private Equipo? equipoSeleccionado;
-    private List<Panel> paneles = new List<Panel>();
-    private Panel panelSeleccionado;
-    private string successMessage, nuevoNombre, nuevaDescripcion, errorMessage;
-    private bool editandoNombre;
-    private bool editandoDescripcion;
-    private bool firstRender = true;
+    private List<Equipo> _equipos = new List<Equipo>();
+    private string? _nombreEquipoSeleccionado, _nombrePanelSeleccionado;
+    private Equipo? _equipoSeleccionado;
+    private List<Panel> _paneles = new List<Panel>();
+    private Panel? _panelSeleccionado;
+    private string? _successMessage, _nuevoNombre, _nuevaDescripcion, _errorMessage;
+    private bool _editandoNombre, _editandoDescripcion;
 
 
     protected override void OnInitialized()
     {
-        if(sesionLogic.UsuarioLogueado != null)
+        if(SesionLogic.UsuarioLogueado != null)
         {
-            equipos = equipoLogic.ListarEquipos(sesionLogic.UsuarioLogueado);
+            _equipos = EquipoLogic.ListarEquipos(SesionLogic.UsuarioLogueado);
         }
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        if (firstRender && SesionLogic.UsuarioLogueado == null)
         {
-            if (sesionLogic.UsuarioLogueado == null)
+            if (SesionLogic.UsuarioLogueado == null)
             {
                 Navigation.NavigateTo("https://localhost:7014/", true);
             }
@@ -114,69 +111,69 @@
     
     private void CargarEquipo()
     {
-        if (!string.IsNullOrEmpty(nombreEquipoSeleccionado))
+        if (!string.IsNullOrEmpty(_nombreEquipoSeleccionado))
         {
-            errorMessage = null;
-            equipoSeleccionado = equipos.FirstOrDefault(e => e.Nombre == nombreEquipoSeleccionado);
-            paneles = equipoLogic.ListarPaneles(equipoSeleccionado.Nombre);
+            _errorMessage = null;
+            _equipoSeleccionado = _equipos.FirstOrDefault(e => e.Nombre == _nombreEquipoSeleccionado);
+            _paneles = EquipoLogic.ListarPaneles(_equipoSeleccionado.Nombre);
         }
     }
     private void CargarPanel()
     {
-        if (!string.IsNullOrEmpty(nombrePanelSeleccionado))
+        if (!string.IsNullOrEmpty(_nombrePanelSeleccionado))
         {
-            errorMessage = null;
-            panelSeleccionado = paneles.FirstOrDefault(p => p.Nombre == nombrePanelSeleccionado);
+            _errorMessage = null;
+            _panelSeleccionado = _paneles.FirstOrDefault(p => p.Nombre == _nombrePanelSeleccionado);
         }
     }
-    private void EditarNombre() => editandoNombre = true;
+    private void EditarNombre() => _editandoNombre = true;
 
     private void GuardarNombre()
     {
         try
         {
-            if (panelSeleccionado == null)
+            if (_panelSeleccionado == null)
             {
-                errorMessage = "No se ha seleccionado un panel.";
+                _errorMessage = "No se ha seleccionado un panel.";
                 return;
             }
 
-            if (string.IsNullOrEmpty(nuevoNombre))
+            if (string.IsNullOrEmpty(_nuevoNombre))
             {
-                errorMessage = "El nuevo nombre no puede estar vacío.";
+                _errorMessage = "El nuevo nombre no puede estar vacío.";
                 return;
             }
 
-            if (sesionLogic.UsuarioLogueado == null)
+            if (SesionLogic.UsuarioLogueado == null)
             {
-                errorMessage = "El usuario logueado no está disponible.";
+                _errorMessage = "El usuario logueado no está disponible.";
                 return;
             }
 
-            errorMessage = null;
-            panelLogic.CambiarNombre(panelSeleccionado.Nombre, nuevoNombre, sesionLogic.UsuarioLogueado, equipoSeleccionado.Nombre);
-            nombrePanelSeleccionado = nuevoNombre;
-            editandoNombre = false;
+            _errorMessage = null;
+            PanelLogic.CambiarNombre(_panelSeleccionado.Nombre, _nuevoNombre, SesionLogic.UsuarioLogueado, _equipoSeleccionado.Nombre);
+            _nombrePanelSeleccionado = _nuevoNombre;
+            _editandoNombre = false;
         }
         catch (Exception e)
         {
-            errorMessage = e.Message;
+            _errorMessage = e.Message;
         }
     }
     
-    private void EditarDescripcion() => editandoDescripcion = true;
+    private void EditarDescripcion() => _editandoDescripcion = true;
     private void GuardarDescripcion()
     {
         try
         {
-            errorMessage = null;
-            panelLogic.CambiarDescripcion(panelSeleccionado.Nombre, nuevaDescripcion, sesionLogic.UsuarioLogueado, equipoSeleccionado.Nombre);
-            panelSeleccionado.Descripcion = nuevaDescripcion;
-            editandoDescripcion = false;
+            _errorMessage = null;
+            PanelLogic.CambiarDescripcion(_panelSeleccionado.Nombre, _nuevaDescripcion, SesionLogic.UsuarioLogueado, _equipoSeleccionado.Nombre);
+            _panelSeleccionado.Descripcion = _nuevaDescripcion;
+            _editandoDescripcion = false;
         }
         catch (Exception e)
         {
-            errorMessage = e.Message;
+            _errorMessage = e.Message;
         }
     }
 }

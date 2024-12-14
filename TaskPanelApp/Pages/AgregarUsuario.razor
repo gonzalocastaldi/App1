@@ -1,54 +1,53 @@
 ﻿@page "/agregarUsuario"
-@using BusinessLogic
 @using BusinessLogic.Interfaces
 @using DTOs
 @using Domain
-@inject IUsuarioLogic usuarioLogic
+@inject IUsuarioLogic UsuarioLogic
 @inject NavigationManager NavigationManager
-@inject SesionLogic sesionLogic
+@inject SesionLogic SesionLogic
 
-@if (sesionLogic.UsuarioLogueado != null && sesionLogic.UsuarioLogueado.EsAdmin)
+@if (SesionLogic.UsuarioLogueado != null && SesionLogic.UsuarioLogueado.EsAdmin)
 {
     <h3>Agregar nuevo usuario</h3>
 
     <form @onsubmit="CrearUsuario">
         <div class="mb-3">
             <label for="email">Email:</label>
-            <input id="email" type="text" class="form-control" maxlength="50" @bind="email" required />
+            <input id="email" type="text" class="form-control" maxlength="50" @bind="_email" required />
         </div>
 
         <div class="mb-3">
             <label for="nombre">Nombre:</label>
-            <input id="nombre" type="text" class="form-control" maxlength="50" @bind="nombre" required/>
+            <input id="nombre" type="text" class="form-control" maxlength="50" @bind="_nombre" required/>
         </div>
 
         <div class="mb-3">
             <label for="apellido">Apellido:</label>
-            <input id="apellido" type="text" class="form-control" maxlength="50" @bind="apellido" required />
+            <input id="apellido" type="text" class="form-control" maxlength="50" @bind="_apellido" required />
         </div>
 
         <div class="mb-3">
             <label for="fechaNacimiento">Fecha de Nacimiento:</label>
-            <input id="fechaNacimiento" type="date" class="form-control" @bind="fechaNacimiento" required/>
+            <input id="fechaNacimiento" type="date" class="form-control" @bind="_fechaNacimiento" required/>
         </div>
 
         <div class="mb-3">
             <label for="contrasena">Contraseña:</label>
-            <input id="contrasena" type="password" class="form-control" maxlength="50" @bind="contraseña" required />
+            <input id="contrasena" type="password" class="form-control" maxlength="50" @bind="_contraseña" required />
         </div>
 
         <div class="mb-3">
             <label for="esAdmin">Es Admin:</label>
-            <input id="esAdmin" type="checkbox" class="form-check-input" @bind="esAdmin"/>
+            <input id="esAdmin" type="checkbox" class="form-check-input" @bind="_esAdmin"/>
         </div>
 
         <button type="submit" class="btn btn-primary">Guardar</button>
     </form>
 
-    @if (validationError != null)
+    @if (_validationError != null)
     {
         <div class="alert alert-danger">
-            <p>@validationError</p>
+            <p>@_validationError</p>
         </div>
     }
 }
@@ -60,18 +59,18 @@ else
 
 
 @code {
-    private Usuario usuario = new Usuario();
-    private string validationError, contraseña, email, nombre, apellido;
-    private DateTime fechaNacimiento;
-    private bool esAdmin;
-    UsuarioDTO user = new UsuarioDTO();
-    private bool firstRender = true;
+    private Usuario _usuario = new Usuario();
+    private string? _validationError, _contraseña, _email, _nombre, _apellido;
+    private DateTime _fechaNacimiento;
+    private bool _esAdmin;
+    UsuarioDTO _user = new UsuarioDTO();
+    private bool _firstRender = true;
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        if (firstRender && SesionLogic.UsuarioLogueado == null)
         {
-            if (sesionLogic.UsuarioLogueado == null)
+            if (SesionLogic.UsuarioLogueado == null)
             {
                 NavigationManager.NavigateTo("https://localhost:7014/", true);
             }
@@ -83,15 +82,15 @@ else
     {
         try
         {
-            user.EsAdmin = esAdmin;
-            user.Nombre = nombre;
-            user.Apellido = apellido;
-            user.Email = email;
-            user.FechaNacimiento = fechaNacimiento;
-            user.Contrasena = contraseña;
+            _user.EsAdmin = _esAdmin;
+            _user.Nombre = _nombre;
+            _user.Apellido = _apellido;
+            _user.Email = _email;
+            _user.FechaNacimiento = _fechaNacimiento;
+            _user.Contrasena = _contraseña;
 
-            validationError = usuarioLogic.ValidarYGuardarUsuario(user);
-            if (validationError == null)
+            _validationError = UsuarioLogic.ValidarYGuardarUsuario(_user);
+            if (_validationError == null)
             {
                 LimpiarFormulario();
                 VolverAlMenu();
@@ -99,15 +98,15 @@ else
         }
         catch (Exception e)
         {
-            validationError = e.Message;
+            _validationError = e.Message;
         }
     }
 
     private void LimpiarFormulario()
     {
-        if (string.IsNullOrEmpty(validationError))
+        if (string.IsNullOrEmpty(_validationError))
         {
-            usuario = new Usuario();
+            _usuario = new Usuario();
         }
     }
     private void VolverAlMenu()

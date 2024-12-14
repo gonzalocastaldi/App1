@@ -1,6 +1,7 @@
 ﻿using BusinessLogic.Interfaces;
 using DataAccess;
 using Domain;
+using DTOs;
 
 namespace BusinessLogic;
 
@@ -30,16 +31,16 @@ public class PanelLogic : IPanelLogic
         panel.AgregarTarea(tarea);
         _equipos.Actualizar(equipo);
     }
-
-    public void AgregarEpica(string nombreEquipo, string nombrePanel, Epica epica, Usuario usuario) 
+    
+    public void AgregarEpica(AgregarEpicaDto agregarEpicaDto) 
     {
-        var panel = _equipos.ObtenerTodosLosEquipos().SelectMany(e => e.Paneles).FirstOrDefault(p => p.Nombre == nombrePanel);
+        var panel = _equipos.ObtenerTodosLosEquipos().SelectMany(e => e.Paneles).FirstOrDefault(p => p.Nombre == agregarEpicaDto.PanelSeleccionado.Nombre);
         bool existePanel = panel != null;
         ManejoExcepciones.ChequearCondiciones(existePanel, "El panel no existe.");
-        bool existeEpicaConNombre = _equipos.ObtenerEpicasDePanel(nombreEquipo, nombrePanel).Any(t => t.Titulo == epica.Titulo);
+        bool existeEpicaConNombre = _equipos.ObtenerEpicasDePanel(agregarEpicaDto.EquipoSeleccionado.Nombre, agregarEpicaDto.PanelSeleccionado.Nombre).Any(t => t.Titulo == agregarEpicaDto.Epica.Titulo);
         ManejoExcepciones.ChequearCondiciones(!existeEpicaConNombre, "Ya existe una epica con ese nombre.");
         
-        panel.AgregarEpica(epica);
+        panel.AgregarEpica(agregarEpicaDto.Epica);
         _equipos.Actualizar(panel.Equipo);
     }
 
@@ -182,11 +183,11 @@ public class PanelLogic : IPanelLogic
         }
     }
 
-    public string? ValidarYGuardarEpica(string nombreEquipo, Epica epica, Panel? panel, Usuario usuario)
+    public string? ValidarYGuardarEpica(AgregarEpicaDto agregarEpicaDto)
     {
         try
         {
-            AgregarEpica(nombreEquipo ,panel.Nombre, epica, usuario);
+            AgregarEpica(agregarEpicaDto);
             return null;
         }catch(Exception e)
         {

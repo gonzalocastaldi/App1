@@ -1,6 +1,7 @@
 ﻿@page "/CrearEpica"
 @using BusinessLogic.Interfaces
 @using Domain
+@using DTOs
 @inject IEquipoLogic EquipoLogic
 @inject IPanelLogic PanelLogic
 @inject SesionLogic SesionLogic
@@ -114,7 +115,12 @@
 
     private void CrearNuevaEpica()
     {
-        _validationError = PanelLogic.ValidarYGuardarEpica(_equipoSeleccionado.Nombre, _epica, _panelSeleccionado, SesionLogic.UsuarioLogueado);
+        AgregarEpicaDto agregarEpicaDto = new AgregarEpicaDto();
+        agregarEpicaDto.Epica = _epica;
+        agregarEpicaDto.EquipoSeleccionado = _equipoSeleccionado;
+        agregarEpicaDto.PanelSeleccionado = _panelSeleccionado;
+        agregarEpicaDto.UsuarioLogueado = SesionLogic.UsuarioLogueado;
+        _validationError = PanelLogic.ValidarYGuardarEpica(agregarEpicaDto);
         if (_validationError == null)
         {
             LimpiarFormulario();

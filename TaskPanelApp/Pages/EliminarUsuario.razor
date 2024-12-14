@@ -1,20 +1,19 @@
 ﻿@page "/EliminarUsuario"
-@using BusinessLogic
 @using BusinessLogic.Interfaces
 @using Domain
-@inject IUsuarioLogic usuarioLogic
-@inject SesionLogic sesionLogic
+@inject IUsuarioLogic UsuarioLogic
+@inject SesionLogic SesionLogic
 @inject NavigationManager Navigation
 
-@if (sesionLogic.UsuarioLogueado != null && sesionLogic.UsuarioLogueado.EsAdmin)
+@if (SesionLogic.UsuarioLogueado.EsAdmin)
 {
     <h3>Eliminar usuario</h3>
 
     <div class="mb-3">
         <label for="equipoSelect">Seleccionar Usuario:</label>
-        <select id="equipoSelect" class="form-control" @bind="emailSeleccionado">
+        <select id="equipoSelect" class="form-control" @bind="_emailSeleccionado">
             <option value="">Seleccione un usuario</option>
-            @foreach (var usuario in usuarios)
+            @foreach (var usuario in _usuarios)
             {
                 <option value="@usuario.Email">@usuario.Email</option>
             }
@@ -24,40 +23,40 @@
     <button class="btn btn-primary" @onclick="CargarUsuario">Cargar Usuario</button>
     <button class="btn btn-danger" @onclick="EliminarUsuarioSeleccionado">Eliminar Usuario</button>
 
-    @if (!string.IsNullOrEmpty(errorMessage))
+    @if (!string.IsNullOrEmpty(_errorMessage))
     {
         <div class="alert alert-danger">
-            <p>@errorMessage</p>
+            <p>@_errorMessage</p>
         </div>
     }
 
-    @if (!string.IsNullOrEmpty(successMessage))
+    @if (!string.IsNullOrEmpty(_successMessage))
     {
         <div class="alert alert-success">
-            <p>@successMessage</p>
+            <p>@_successMessage</p>
         </div>
     }
 
-    @if (usuarioSeleccionado != null)
+    @if (_usuarioSeleccionado != null)
     {
         <div class="mb-3">
             <label for="email">Email:</label>
-            <p>@usuarioSeleccionado.Email</p>
+            <p>@_usuarioSeleccionado.Email</p>
         </div>
 
         <div class="mb-3">
             <label for="nombre">Nombre:</label>
-            <p>@usuarioSeleccionado.Nombre</p>
+            <p>@_usuarioSeleccionado.Nombre</p>
         </div>
 
         <div class="mb-3">
             <label for="apellido">Apellido:</label>
-            <p>@usuarioSeleccionado.Apellido</p>
+            <p>@_usuarioSeleccionado.Apellido</p>
         </div>
 
         <div class="mb-3">
             <label for="esAdmin">Es Admin:</label>
-            @if (usuarioSeleccionado.EsAdmin)
+            @if (_usuarioSeleccionado.EsAdmin)
             {
                 <p>Si</p>
             }
@@ -76,27 +75,26 @@ else
 
 
 @code {
-    private List<Usuario> usuarios = new List<Usuario>();
-    private string? emailSeleccionado;
-    private Usuario? usuarioSeleccionado;
-    private string successMessage;
-    private string errorMessage;
-    private bool firstRender = true;
+    private List<Usuario> _usuarios = new List<Usuario>();
+    private string? _emailSeleccionado;
+    private Usuario? _usuarioSeleccionado;
+    private string? _successMessage;
+    private string? _errorMessage;
 
 
     protected override void OnInitialized()
     {
-        if(sesionLogic.UsuarioLogueado != null)
+        if(SesionLogic.UsuarioLogueado != null)
         {
-            usuarios = usuarioLogic.ListarUsuarios(sesionLogic.UsuarioLogueado);
+            _usuarios = UsuarioLogic.ListarUsuarios(SesionLogic.UsuarioLogueado);
         }
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        if (firstRender && SesionLogic.UsuarioLogueado == null)
         {
-            if (sesionLogic.UsuarioLogueado == null)
+            if (SesionLogic.UsuarioLogueado == null)
             {
                 Navigation.NavigateTo("https://localhost:7014/", true);
             }
@@ -106,33 +104,33 @@ else
 
     private void CargarUsuario()
     {
-        if (!string.IsNullOrEmpty(emailSeleccionado))
+        if (!string.IsNullOrEmpty(_emailSeleccionado))
         {
-            usuarioSeleccionado = usuarios.FirstOrDefault(u => u.Email == emailSeleccionado);
-            errorMessage = null;
-            successMessage = null;
+            _usuarioSeleccionado = _usuarios.FirstOrDefault(u => u.Email == _emailSeleccionado);
+            _errorMessage = null;
+            _successMessage = null;
         }
     }
 
     private void EliminarUsuarioSeleccionado()
     {
-        if (usuarioSeleccionado != null)
+        if (_usuarioSeleccionado != null)
         {
-            if (usuarioSeleccionado.Email == sesionLogic.UsuarioLogueado.Email)
+            if (_usuarioSeleccionado.Email == SesionLogic.UsuarioLogueado.Email)
             {
-                errorMessage = "No puede eliminar su propio usuario.";
+                _errorMessage = "No puede eliminar su propio usuario.";
                 return;
             }
-            usuarioLogic.EliminarUsuario(usuarioSeleccionado, sesionLogic.UsuarioLogueado);
-            usuarios.Remove(usuarioSeleccionado);
-            usuarioSeleccionado = null;
-            errorMessage = null;
-            successMessage = "Usuario eliminado correctamente.";
+            UsuarioLogic.EliminarUsuario(_usuarioSeleccionado, SesionLogic.UsuarioLogueado);
+            _usuarios.Remove(_usuarioSeleccionado);
+            _usuarioSeleccionado = null;
+            _errorMessage = null;
+            _successMessage = "Usuario eliminado correctamente.";
         }
         else
         {
-            successMessage = null;
-            errorMessage = "Debe cargar el usuario para poder eliminarlo.";
+            _successMessage = null;
+            _errorMessage = "Debe cargar el usuario para poder eliminarlo.";
         }
     }
 

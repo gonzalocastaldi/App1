@@ -1,13 +1,12 @@
 ﻿@page "/inicio"
-@using BusinessLogic
-@inject SesionLogic sesionLogic
+@inject SesionLogic SesionLogic
 @inject NavigationManager NavigationManager
 
 <PageTitle>Inicio</PageTitle>
 
-@if(sesionLogic.UsuarioLogueado != null)
+@if(SesionLogic.UsuarioLogueado != null)
 {
-<h3> Bienvenido @sesionLogic.UsuarioLogueado.Nombre a TaskPanelApp! </h3>
+<h3> Bienvenido @SesionLogic.UsuarioLogueado.Nombre a TaskPanelApp! </h3>
 
 
 

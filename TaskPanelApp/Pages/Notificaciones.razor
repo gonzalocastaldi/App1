@@ -1,9 +1,8 @@
 ﻿@page "/Notificaciones"
-@using BusinessLogic
 @using BusinessLogic.Interfaces
 @using Domain
-@inject SesionLogic sesionLogic
-@inject IUsuarioLogic usuarioLogic
+@inject SesionLogic SesionLogic
+@inject IUsuarioLogic UsuarioLogic
 @inject NavigationManager Navigation
 
 
@@ -34,20 +33,19 @@
 
     protected override void OnInitialized()
     {
-        usuarioLogic.actualizar(sesionLogic.UsuarioLogueado);
-        if(sesionLogic.UsuarioLogueado != null)
+        UsuarioLogic.actualizar(SesionLogic.UsuarioLogueado);
+        if(SesionLogic.UsuarioLogueado != null)
         {
-            _UsuarioLogueado = sesionLogic.UsuarioLogueado;
-            _notificaciones = usuarioLogic.ListarNotificaciones(_UsuarioLogueado);
-            //_notificaciones = _UsuarioLogueado.Notificaciones;
+            _UsuarioLogueado = SesionLogic.UsuarioLogueado;
+            _notificaciones = UsuarioLogic.ListarNotificaciones(_UsuarioLogueado);
         }
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender && sesionLogic.UsuarioLogueado == null)
+        if (firstRender && SesionLogic.UsuarioLogueado == null)
         {
-            if (sesionLogic.UsuarioLogueado == null)
+            if (SesionLogic.UsuarioLogueado == null)
             {
                 Navigation.NavigateTo("https://localhost:7014/", true);
             }
@@ -57,7 +55,7 @@
     
     private void EliminarNotificacionSeleccionada(Notificacion notificacion)
     {
-        usuarioLogic.EliminarNotificacion(notificacion);
-        _notificaciones = usuarioLogic.ListarNotificaciones(_UsuarioLogueado);
+        UsuarioLogic.EliminarNotificacion(notificacion);
+        _notificaciones = UsuarioLogic.ListarNotificaciones(_UsuarioLogueado);
     }
 }

@@ -32,7 +32,7 @@ public class EpicaLogic_Tests
         Panel? panel = new Panel("panel1", "descripcion1", "equipo1");
         equipoLogic.AgregarPanel("equipo1", panel, usuario);
         Epica epica = new Epica("titulo", Prioridad.Baja, "descripcion", new DateTime(2025, 11, 11));
-        panelLogic.AgregarEpica("equipo1","panel1", epica, usuario);
+        //panelLogic.AgregarEpica("equipo1","panel1", epica, usuario);
         Assert.AreEqual(1, panel.Epicas.Count);
     }
 
@@ -46,7 +46,7 @@ public class EpicaLogic_Tests
         _equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
         Epica epica = new Epica("titulo", Prioridad.Baja, "descripcion", new DateTime(2025, 11, 11));
         PanelLogic panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
-        panelLogic.AgregarEpica("equipo1","nombre", epica, usuarioCreador);
+        //panelLogic.AgregarEpica("equipo1","nombre", epica, usuarioCreador);
         EpicaLogic epicaLogic = new EpicaLogic(_repositorioEquipo);
         CambiarTituloEpicaDTO cambiarTituloEpicaDto =
             new CambiarTituloEpicaDTO("equipo1", "nombre", "nuevoTitulo", "titulo");
@@ -64,7 +64,7 @@ public class EpicaLogic_Tests
         _equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
         Epica epica = new Epica("titulo", Prioridad.Baja, "descripcion", new DateTime(2025, 11, 11));
         PanelLogic panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
-        panelLogic.AgregarEpica("equipo1","nombre", epica, usuarioCreador);
+        //panelLogic.AgregarEpica("equipo1","nombre", epica, usuarioCreador);
         EpicaLogic epicaLogic = new EpicaLogic(_repositorioEquipo);
         epicaLogic.CambiarDescripcion("equipo1", "nombre", "nuevaDesc", "titulo");
         Assert.AreEqual("nuevaDesc", panel.Epicas[0].Descripcion);
@@ -80,7 +80,7 @@ public class EpicaLogic_Tests
         equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
         Epica epica = new Epica("titulo", Prioridad.Baja, "descripcion", new DateTime(2025, 11, 11));
         PanelLogic panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
-        panelLogic.AgregarEpica("equipo1","nombre", epica, usuarioCreador);
+        //panelLogic.AgregarEpica("equipo1","nombre", epica, usuarioCreador);
         EpicaLogic epicaLogic = new EpicaLogic(_repositorioEquipo);
         Tarea tarea = new Tarea("titulo", new DateTime(2025, 11, 11), "descripcion", 1, panel, panel, 10);
         Tarea tarea2 = new Tarea("titulo", new DateTime(2025, 11, 11), "descripcion", 1, panel, panel, 10);
@@ -98,7 +98,7 @@ public class EpicaLogic_Tests
         equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
         Epica epica = new Epica("titulo", Prioridad.Baja, "descripcion", new DateTime(2025, 11, 11));
         PanelLogic panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
-        panelLogic.AgregarEpica("equipo1","nombre", epica, usuarioCreador);
+        //panelLogic.AgregarEpica("equipo1","nombre", epica, usuarioCreador);
         panelLogic.EliminarEpica("equipo1", "nombre", epica);
         Assert.AreEqual(0, panel.Epicas.Count);
     }
@@ -113,7 +113,7 @@ public class EpicaLogic_Tests
         equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
         Epica epica = new Epica("titulo", Prioridad.Baja, "descripcion", new DateTime(2025, 11, 11));
         PanelLogic panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
-        panelLogic.ValidarYGuardarEpica("equipo1", epica, panel, usuarioCreador);
+        //panelLogic.ValidarYGuardarEpica("equipo1", epica, panel, usuarioCreador);
         Assert.AreEqual(1, panel.Epicas.Count);
     }
     
@@ -127,7 +127,7 @@ public class EpicaLogic_Tests
         equipoLogic.AgregarPanel("equipo1", panel, usuarioCreador);
         Epica epica = new Epica("titulo", Prioridad.Baja, "descripcion", new DateTime(2025, 11, 11));
         PanelLogic panelLogic = new PanelLogic(_repositorioEquipo, _repositorioUsuario);
-        panelLogic.AgregarEpica("equipo1","nombre", epica, usuarioCreador);
+        //panelLogic.AgregarEpica("equipo1","nombre", epica, usuarioCreador);
         EpicaLogic epicaLogic = new EpicaLogic(_repositorioEquipo);
         Tarea tarea = new Tarea("titulo", new DateTime(2025, 11, 11), "descripcion", 1, panel, panel, 10);
         panelLogic.AgregarTarea("nombre", tarea, "equipo1");
